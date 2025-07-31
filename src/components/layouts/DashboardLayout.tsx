@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router'
 import { useAuth } from '../../contexts/AuthContext'
 import { cn } from '../../lib/utils'
 
@@ -23,8 +23,7 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
       href: '/company',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       )
     },
@@ -47,6 +46,15 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
       )
     },
     {
+      name: '매출관리(구현중)',
+      href: '/company/sales',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )
+    },
+    {
       name: '주문 관리',
       href: '/company/orders',
       icon: (
@@ -65,13 +73,20 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
       )
     },
     {
-      name: '사용자 관리',
-      href: '/company/users',
+      name: '시스템 관리',
+      href: '/company/system',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
-      )
+      ),
+      subMenu: [
+        { name: '사용자 관리', href: '/company/system/users' },
+        { name: '권한 설정', href: '/company/system/permissions' },
+        { name: '시스템 설정', href: '/company/system/settings' },
+        { name: '감사 로그', href: '/company/system/audit-logs' },
+      ]
     }
   ]
 
@@ -119,6 +134,15 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+        </svg>
+      )
+    },
+    {
+      name: '매출관리(구현중)',
+      href: '/brand/sales',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       )
     },
@@ -226,6 +250,15 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
 
 function SidebarContent({ navigation }: { navigation: any[] }) {
   const location = useLocation()
+  const [expandedItems, setExpandedItems] = useState<string[]>([])
+  
+  const toggleExpanded = (itemName: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemName) 
+        ? prev.filter(name => name !== itemName)
+        : [...prev, itemName]
+    )
+  }
   
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
@@ -235,7 +268,68 @@ function SidebarContent({ navigation }: { navigation: any[] }) {
         </div>
         <nav className="mt-5 flex-1 px-2 space-y-1">
           {navigation.map((item) => {
-            const isActive = location.pathname === item.href
+            const isActive = location.pathname === item.href || 
+                           (item.subMenu && item.subMenu.some(sub => location.pathname === sub.href))
+            const isExpanded = expandedItems.includes(item.name)
+            
+            if (item.subMenu) {
+              return (
+                <div key={item.name}>
+                  <button
+                    onClick={() => toggleExpanded(item.name)}
+                    className={cn(
+                      isActive
+                        ? 'bg-indigo-100 text-indigo-900'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                      'group flex items-center justify-between w-full px-2 py-2 text-sm font-medium rounded-md'
+                    )}
+                  >
+                    <div className="flex items-center">
+                      <div className={cn(
+                        isActive ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500',
+                        'mr-3 flex-shrink-0'
+                      )}>
+                        {item.icon}
+                      </div>
+                      {item.name}
+                    </div>
+                    <svg
+                      className={cn(
+                        'w-4 h-4 transition-transform',
+                        isExpanded ? 'transform rotate-180' : ''
+                      )}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isExpanded && (
+                    <div className="ml-8 mt-1 space-y-1">
+                      {item.subMenu.map((subItem) => {
+                        const isSubActive = location.pathname === subItem.href
+                        return (
+                          <Link
+                            key={subItem.name}
+                            to={subItem.href}
+                            className={cn(
+                              isSubActive
+                                ? 'bg-indigo-50 text-indigo-700'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                              'block px-2 py-2 text-sm rounded-md'
+                            )}
+                          >
+                            {subItem.name}
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            }
+            
             return (
               <Link
                 key={item.name}

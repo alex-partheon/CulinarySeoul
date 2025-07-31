@@ -221,3 +221,211 @@ export interface InventoryFilter {
   expired_only?: boolean
   tags?: string[]
 }
+
+// TASK-006: FIFO 기반 원재료 관리 시스템 타입 정의
+
+// 재고 로트 (FIFO 처리를 위한 핵심 엔티티)
+export interface InventoryLot extends AuditableEntity {
+  material_id: string
+  store_id: string
+  lot_number: string
+  received_date: string
+  expiry_date?: string
+  received_quantity: number
+  available_quantity: number
+  unit_cost: Money
+  supplier_info: SupplierInfo
+  status: LotStatus
+}
+
+// 로트 상태
+export enum LotStatus {
+  ACTIVE = 'active',
+  DEPLETED = 'depleted',
+  EXPIRED = 'expired',
+  QUARANTINED = 'quarantined'
+}
+
+// 공급업체 정보
+export interface SupplierInfo {
+  supplier_id?: string
+  supplier_name?: string
+  invoice_number?: string
+  delivery_note?: string
+  quality_grade?: string
+  certification?: string[]
+}
+
+// FIFO 출고 처리 결과
+export interface OutboundResult {
+  success: boolean
+  usedLots: UsedLot[]
+  totalCost: number
+  averageUnitCost: number
+  shortageQuantity: number
+  transactionId: string
+}
+
+// 사용된 로트 정보
+export interface UsedLot {
+  lotId: string
+  quantity: number
+  unitCost: number
+  totalCost: number
+  lotNumber: string
+  receivedDate: string
+}
+
+// FIFO 입고 처리 요청
+export interface InboundRequest {
+  materialId: string
+  storeId: string
+  quantity: number
+  unitCost: number
+  lotNumber?: string
+  expiryDate?: string
+  supplierInfo: SupplierInfo
+  receivedDate?: string
+}
+
+// FIFO 출고 처리 요청
+export interface OutboundRequest {
+  materialId: string
+  storeId: string
+  quantity: number
+  reason: MovementType
+  referenceId?: string
+  notes?: string
+}
+
+// 재고 조정 요청
+export interface StockAdjustmentRequest {
+  lotId: string
+  newQuantity: number
+  reason: AdjustmentReason
+  notes?: string
+  approvedBy: string
+}
+
+// 재고 회전율 분석 결과
+export interface InventoryTurnoverAnalysis {
+  materialId: string
+  materialName: string
+  period: AnalysisPeriod
+  averageInventory: number
+  costOfGoodsSold: number
+  turnoverRatio: number
+  daysInInventory: number
+  trend: 'improving' | 'declining' | 'stable'
+  recommendations: string[]
+}
+
+// 분석 기간
+export interface AnalysisPeriod {
+  startDate: string
+  endDate: string
+  periodType: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'
+}
+
+// 안전재고 알림 설정
+export interface SafetyStockAlert {
+  materialId: string
+  storeId: string
+  currentStock: number
+  safetyStockLevel: number
+  reorderPoint: number
+  alertLevel: 'warning' | 'critical'
+  estimatedStockoutDate?: string
+  suggestedOrderQuantity: number
+}
+
+// 유통기한 알림
+export interface ExpiryAlert {
+  lotId: string
+  materialId: string
+  materialName: string
+  lotNumber: string
+  expiryDate: string
+  daysUntilExpiry: number
+  availableQuantity: number
+  alertLevel: 'warning' | 'critical' | 'expired'
+  suggestedAction: 'use_first' | 'discount' | 'dispose'
+}
+
+// 재고 폐기 처리
+export interface WasteDisposal {
+  lotId: string
+  disposalQuantity: number
+  disposalReason: WasteReason
+  disposalDate: string
+  disposalCost?: number
+  approvedBy: string
+  notes?: string
+  environmentalImpact?: EnvironmentalImpact
+}
+
+// 폐기 사유
+export enum WasteReason {
+  EXPIRED = 'expired',
+  DAMAGED = 'damaged',
+  CONTAMINATED = 'contaminated',
+  QUALITY_ISSUE = 'quality_issue',
+  OVERSTOCK = 'overstock',
+  RECALL = 'recall'
+}
+
+// 환경 영향
+export interface EnvironmentalImpact {
+  carbonFootprint?: number
+  wasteWeight?: number
+  recyclingMethod?: string
+  disposalMethod: string
+}
+
+// 원재료 마스터 데이터
+export interface RawMaterial extends AuditableEntity {
+  code: string
+  name: string
+  description?: string
+  category: InventoryCategory
+  unit: Unit
+  standardCost: Money
+  safetyStockDays: number
+  leadTimeDays: number
+  shelfLifeDays?: number
+  storageConditions: StorageConditions
+  qualitySpecs: QualitySpecification[]
+  allergens: string[]
+  nutritionalInfo?: NutritionalInfo
+  isActive: boolean
+}
+
+// 보관 조건
+export interface StorageConditions {
+  temperature?: TemperatureRange
+  humidity?: HumidityRange
+  lightCondition: 'dark' | 'normal' | 'bright'
+  ventilation: 'none' | 'normal' | 'high'
+  specialRequirements?: string[]
+}
+
+// 온도 범위
+export interface TemperatureRange {
+  min: number
+  max: number
+  unit: 'celsius' | 'fahrenheit'
+}
+
+// 습도 범위
+export interface HumidityRange {
+  min: number
+  max: number
+}
+
+// 품질 규격
+export interface QualitySpecification {
+  parameter: string
+  specification: string
+  testMethod?: string
+  acceptanceCriteria: string
+}

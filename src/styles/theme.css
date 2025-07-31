@@ -1,0 +1,184 @@
+/* CulinarySeoul Design System - Modern Korean Restaurant Experience */
+
+/* Font Imports */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+/* Tailwind v4 Theme Integration */
+@theme {
+  /* Color System */
+  --color-background: hsl(80 33% 96%);
+  --color-foreground: hsl(222 15% 15%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(222 15% 15%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(222 15% 15%);
+  
+  /* Brand Colors */
+  --color-primary: hsl(243 76% 59%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(173 80% 40%);
+  --color-secondary-foreground: hsl(0 0% 100%);
+  --color-accent: hsl(38 92% 50%);
+  --color-accent-foreground: hsl(0 0% 0%);
+  
+  /* Semantic Colors */
+  --color-muted: hsl(210 40% 95%);
+  --color-muted-foreground: hsl(215 16% 47%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  
+  /* Interface Colors */
+  --color-border: hsl(214 32% 91%);
+  --color-input: hsl(214 32% 91%);
+  --color-ring: hsl(243 76% 59%);
+  
+  /* Chart Colors */
+  --color-chart-1: hsl(243 76% 59%);
+  --color-chart-2: hsl(173 80% 40%);
+  --color-chart-3: hsl(38 92% 50%);
+  --color-chart-4: hsl(330 82% 60%);
+  --color-chart-5: hsl(142 71% 45%);
+  
+  /* Sidebar Colors */
+  --color-sidebar: hsl(80 33% 96%);
+  --color-sidebar-foreground: hsl(222 15% 15%);
+  --color-sidebar-primary: hsl(243 76% 59%);
+  --color-sidebar-primary-foreground: hsl(0 0% 100%);
+  --color-sidebar-accent: hsl(38 92% 50%);
+  --color-sidebar-accent-foreground: hsl(0 0% 0%);
+  --color-sidebar-border: hsl(214 32% 91%);
+  --color-sidebar-ring: hsl(243 76% 59%);
+
+  /* Typography System */
+  --font-family-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-family-serif: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", serif;
+  --font-family-mono: "Space Mono", monospace;
+  
+  /* Radius System */
+  --radius: 0.75rem;
+  --radius-sm: calc(var(--radius) - 0.25rem);
+  --radius-md: calc(var(--radius) - 0.125rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.25rem);
+  
+  /* Modern Shadow System */
+  --shadow-2xs: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+  --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+  --shadow: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+  --shadow-md: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
+  --shadow-lg: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
+  --shadow-xl: 0 25px 50px -12px hsl(0 0% 0% / 0.25);
+  --shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.25);
+  
+  /* Letter Spacing System */
+  --letter-spacing-normal: 0;
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+}
+
+/* Additional CSS Variables for backward compatibility */
+:root {
+  /* Legacy CSS variables for components */
+  --background: hsl(80 33% 96%);
+  --foreground: hsl(222 15% 15%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222 15% 15%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222 15% 15%);
+  
+  /* Brand Colors */
+  --primary: hsl(243 76% 59%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(173 80% 40%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --accent: hsl(38 92% 50%);
+  --accent-foreground: hsl(0 0% 0%);
+  
+  /* Semantic Colors */
+  --muted: hsl(210 40% 95%);
+  --muted-foreground: hsl(215 16% 47%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  
+  /* Interface Colors */
+  --border: hsl(214 32% 91%);
+  --input: hsl(214 32% 91%);
+  --ring: hsl(243 76% 59%);
+  
+  /* Chart Colors */
+  --chart-1: hsl(243 76% 59%);
+  --chart-2: hsl(173 80% 40%);
+  --chart-3: hsl(38 92% 50%);
+  --chart-4: hsl(330 82% 60%);
+  --chart-5: hsl(142 71% 45%);
+  
+  /* Typography */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-serif: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", serif;
+  --font-mono: "Space Mono", monospace;
+  
+  /* Glassmorphism Support */
+  --glass-backdrop: blur(16px);
+  --glass-bg: hsl(0 0% 100% / 0.8);
+  --glass-border: hsl(255 255% 255% / 0.2);
+}
+
+/* Dark Mode Theme Variables */
+.dark {
+  /* Color System - Dark Mode */
+  --background: hsl(222 47% 4%);
+  --foreground: hsl(213 31% 91%);
+  --card: hsl(222 47% 6%);
+  --card-foreground: hsl(213 31% 91%);
+  --popover: hsl(222 47% 6%);
+  --popover-foreground: hsl(213 31% 91%);
+  
+  /* Brand Colors - Dark Mode Adjusted */
+  --primary: hsl(234 89% 74%);
+  --primary-foreground: hsl(222 47% 4%);
+  --secondary: hsl(172 66% 50%);
+  --secondary-foreground: hsl(222 47% 4%);
+  --accent: hsl(46 97% 65%);
+  --accent-foreground: hsl(222 47% 4%);
+  
+  /* Semantic Colors - Dark Mode */
+  --muted: hsl(215 28% 17%);
+  --muted-foreground: hsl(217 33% 64%);
+  --destructive: hsl(0 91% 71%);
+  --destructive-foreground: hsl(222 47% 4%);
+  
+  /* Interface Colors - Dark Mode Soft Borders */
+  --border: hsl(215 28% 17%);
+  --input: hsl(215 28% 17%);
+  --ring: hsl(234 89% 74%);
+  
+  /* Chart Colors - Dark Mode */
+  --chart-1: hsl(234 89% 74%);
+  --chart-2: hsl(172 66% 50%);
+  --chart-3: hsl(46 97% 65%);
+  --chart-4: hsl(329 85% 70%);
+  --chart-5: hsl(142 69% 58%);
+  
+  /* Dark Mode Glassmorphism */
+  --glass-backdrop: blur(16px);
+  --glass-bg: hsl(222 47% 4% / 0.8);
+  --glass-border: hsl(255 255% 255% / 0.1);
+}
+
+/* Base Styles */
+@layer base {
+  * {
+    border-color: theme(colors.border);
+  }
+  
+  body {
+    background-color: theme(colors.background);
+    color: theme(colors.foreground);
+    font-family: theme(fontFamily.sans);
+  }
+}

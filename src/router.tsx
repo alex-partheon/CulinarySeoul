@@ -99,6 +99,10 @@ export const router = createBrowserRouter([
         path: 'shadcn-test',
         element: <ShadcnTest />
       },
+      {
+        path: 'style-guide',
+        lazy: () => import('./pages/StyleGuide').then(m => ({ Component: m.StyleGuide }))
+      },
       companyRoutes,
       brandRoutes,
       {

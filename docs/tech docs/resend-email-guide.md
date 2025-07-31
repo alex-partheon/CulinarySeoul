@@ -17,6 +17,11 @@ npm install @react-email/render
 ### 환경 변수 설정
 
 ```bash
+<<<<<<< Updated upstream
+=======
+
+RESEND_FROM_EMAIL=noreply@cashup.kr
+>>>>>>> Stashed changes
 RESEND_SUPPORT_EMAIL=support@cashup.kr
 RESEND_MARKETING_EMAIL=marketing@cashup.kr
 

@@ -6,6 +6,7 @@ import { LoginPage } from './pages/auth/Login'
 import { NotFoundPage } from './pages/NotFound'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { AuthProvider } from './contexts/AuthContext'
+import ShadcnTest from './pages/ShadcnTest'
 
 // 회사 관리 라우트
 const companyRoutes = {
@@ -93,6 +94,10 @@ export const router = createBrowserRouter([
       {
         path: 'login',
         element: <LoginPage />
+      },
+      {
+        path: 'shadcn-test',
+        element: <ShadcnTest />
       },
       companyRoutes,
       brandRoutes,

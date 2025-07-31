@@ -17,9 +17,6 @@ npm install @react-email/render
 ### 환경 변수 설정
 
 ```bash
-# .env.local
-RESEND_API_KEY=re_FFPn1HYB_AbpAQPrfpfKos6oN1FhxuU6B
-RESEND_FROM_EMAIL=noreply@cashup.kr
 RESEND_SUPPORT_EMAIL=support@cashup.kr
 RESEND_MARKETING_EMAIL=marketing@cashup.kr
 

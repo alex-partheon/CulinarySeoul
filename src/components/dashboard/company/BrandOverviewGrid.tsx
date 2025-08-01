@@ -51,7 +51,7 @@ type SortOrder = 'asc' | 'desc';
 type FilterStatus = 'all' | 'online' | 'offline' | 'issues';
 
 export const BrandOverviewGrid: React.FC<BrandOverviewGridProps> = ({
-  brands,
+  brands = [],
   isLoading = false,
   className,
 }) => {
@@ -62,7 +62,9 @@ export const BrandOverviewGrid: React.FC<BrandOverviewGridProps> = ({
 
   // Filter and sort brands
   const processedBrands = useMemo(() => {
-    let filtered = brands;
+    // Ensure brands is always an array
+    const safeBrands = Array.isArray(brands) ? brands : [];
+    let filtered = safeBrands;
 
     // Apply search filter
     if (searchQuery) {

@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import { useAuth } from '../../contexts/AuthContext'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
+import { supabase } from '../../lib/supabase'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -16,6 +17,36 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading, hasRole, hasPermission } = useAuth()
   const location = useLocation()
+  const [superAdminBypass, setSuperAdminBypass] = useState<boolean | null>(null)
+
+  // Check for super admin bypass on component mount
+  useEffect(() => {
+    const checkSuperAdminBypass = async () => {
+      const bypass = import.meta.env.VITE_SUPER_ADMIN_BYPASS === 'true';
+      const superAdminEmail = import.meta.env.VITE_SUPER_ADMIN_EMAIL;
+      
+      if (bypass && superAdminEmail) {
+        try {
+          const { data: { user: authUser } } = await supabase.auth.getUser();
+          const isSuperAdmin = authUser?.email === superAdminEmail;
+          console.log('[ProtectedRoute] Super admin bypass check:', {
+            authUser: authUser?.email,
+            superAdminEmail,
+            isSuperAdmin,
+            bypass
+          });
+          setSuperAdminBypass(isSuperAdmin);
+        } catch (error) {
+          console.error('[ProtectedRoute] Error checking super admin bypass:', error);
+          setSuperAdminBypass(false);
+        }
+      } else {
+        setSuperAdminBypass(false);
+      }
+    };
+    
+    checkSuperAdminBypass();
+  }, []);
 
   // Debug logging on render
   useEffect(() => {
@@ -23,42 +54,39 @@ export function ProtectedRoute({
       pathname: location.pathname,
       user: user ? { id: user.id, email: user.email, role: user.role } : null,
       loading,
+      superAdminBypass,
       requiredRole,
       requiredPermission,
       timestamp: new Date().toISOString()
     })
-  }, [location.pathname, user, loading, requiredRole, requiredPermission])
+  }, [location.pathname, user, loading, superAdminBypass, requiredRole, requiredPermission])
 
-  if (loading) {
-    console.log('[ProtectedRoute] Loading state, showing spinner', {
+  // Super admin bypass - allow access regardless of user state
+  if (superAdminBypass === true) {
+    console.log('[ProtectedRoute] Super admin bypass activated, allowing access to:', location.pathname);
+    return <>{children}</>;
+  }
+
+  if (loading || superAdminBypass === null) {
+    console.log('[ProtectedRoute] Loading state or checking super admin bypass', {
       pathname: location.pathname,
+      loading,
+      superAdminBypass,
       timestamp: new Date().toISOString()
     })
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">
+            {superAdminBypass === null ? '관리자 권한을 확인하고 있습니다...' : '로딩 중...'}
+          </p>
+        </div>
       </div>
     )
   }
 
   if (!user) {
-    // Super admin 특별 처리: 추가 대기 시간 허용
-    const isSuperAdminRoute = location.pathname.startsWith('/company') || location.pathname.startsWith('/brand');
-    const superAdminNoTimeout = import.meta.env.VITE_SUPER_ADMIN_NO_TIMEOUT === 'true';
-    
-    if (isSuperAdminRoute && superAdminNoTimeout && !loading) {
-      console.log('[ProtectedRoute] Super admin route detected, allowing additional loading time');
-      // Super admin 경우 추가 로딩 시간 허용
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <LoadingSpinner size="lg" />
-            <p className="mt-4 text-gray-600">관리자 권한을 확인하고 있습니다...</p>
-          </div>
-        </div>
-      )
-    }
-    
     // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
     console.log('[ProtectedRoute] No user found, redirecting to login', {
       from: location.pathname,

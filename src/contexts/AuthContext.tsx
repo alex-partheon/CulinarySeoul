@@ -82,6 +82,45 @@ export function AuthProvider({ children }: AuthProviderProps) {
         metadata: supabaseUser.user_metadata
       })
       
+      // Super admin bypass: Check if this is the super admin email
+      const isSuperAdminEmail = supabaseUser.email === import.meta.env.VITE_SUPER_ADMIN_EMAIL;
+      const superAdminBypass = import.meta.env.VITE_SUPER_ADMIN_BYPASS === 'true';
+      
+      if (isSuperAdminEmail && superAdminBypass) {
+        console.log('[AuthContext] Super admin detected, creating bypass user profile')
+        const superAdminUser: User = {
+          id: supabaseUser.id,
+          email: supabaseUser.email!,
+          username: 'alex',
+          first_name: '김광일',
+          last_name: '',
+          role: UserRole.SUPER_ADMIN,
+          status: 'active' as any,
+          email_verified: true,
+          two_factor_enabled: false,
+          preferences: {
+            language: 'ko',
+            timezone: 'Asia/Seoul',
+            date_format: 'YYYY-MM-DD',
+            currency: 'KRW',
+            notifications: {
+              email_notifications: true,
+              push_notifications: true,
+              sms_notifications: false,
+              low_stock_alerts: true,
+              order_updates: true,
+              system_alerts: true
+            }
+          },
+          permissions: ['*'],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+        setUser(superAdminUser)
+        console.log('[AuthContext] Super admin bypass user created successfully')
+        return
+      }
+      
       const { data, error } = await supabase
         .from('users')
         .select('*')

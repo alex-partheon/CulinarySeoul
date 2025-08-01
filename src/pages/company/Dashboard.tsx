@@ -89,7 +89,10 @@ function CompanyDashboardContent() {
 
           <TabsContent value="overview" className="space-y-6">
             {/* Brand Overview Grid */}
-            <BrandOverviewGrid />
+            <BrandOverviewGrid 
+              brands={[]}
+              isLoading={loading}
+            />
           </TabsContent>
 
           <TabsContent value="activity" className="space-y-6">

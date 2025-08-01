@@ -28,6 +28,46 @@ export class PermissionService {
       const cached = permissionCache.get(cacheKey);
       if (cached) return cached;
 
+      // Super admin bypass - check email first to avoid database queries
+      const superAdminBypass = import.meta.env.VITE_SUPER_ADMIN_BYPASS === 'true';
+      
+      if (superAdminBypass) {
+        // Get current session user to check email
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user?.email === import.meta.env.VITE_SUPER_ADMIN_EMAIL) {
+          console.log('[PermissionService] Super admin bypass activated for:', user.email);
+          const superAdminPermissions: UserPermissions = {
+            userId,
+            canAccessCompanyDashboard: true,
+            canAccessBrandDashboard: true,
+            hybridPermissions: {
+              canSwitchBetweenDashboards: true,
+              crossPlatformDataAccess: true,
+              brandContextSwitching: true,
+              globalAdminAccess: true
+            },
+            companyDashboardPermissions: {
+              role: 'super_admin',
+              modules: {},
+              actions: {}
+            },
+            brandDashboardPermissions: {
+              role: 'super_admin',
+              modules: {},
+              actions: {}
+            },
+            crossPlatformAccess: {
+              allowedBrands: ['*'],
+              allowedStores: ['*'],
+              dataSharing: true
+            }
+          };
+          permissionCache.set(cacheKey, superAdminPermissions);
+          return superAdminPermissions;
+        }
+      }
+
       // Check if user is super_admin first - they get full permissions without database lookup
       const { data: userData } = await supabase
         .from('users')
@@ -158,6 +198,17 @@ export class PermissionService {
     brandId?: string
   ): Promise<boolean> {
     try {
+      // Super admin bypass - check email first to avoid database queries
+      const superAdminBypass = import.meta.env.VITE_SUPER_ADMIN_BYPASS === 'true';
+      
+      if (superAdminBypass) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email === import.meta.env.VITE_SUPER_ADMIN_EMAIL) {
+          console.log('[PermissionService] Super admin dashboard access bypass for:', dashboardType);
+          return true;
+        }
+      }
+
       // Check if user is super admin first
       const { data: userData } = await supabase
         .from('users')
@@ -211,6 +262,31 @@ export class PermissionService {
     brandContext?: string
   ): Promise<DashboardSession | null> {
     try {
+      // Super admin bypass - skip session creation entirely
+      const superAdminBypass = import.meta.env.VITE_SUPER_ADMIN_BYPASS === 'true';
+      
+      if (superAdminBypass) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email === import.meta.env.VITE_SUPER_ADMIN_EMAIL) {
+          console.log('[PermissionService] Super admin session bypass - creating virtual session');
+          // Create a virtual session for super admin that doesn't need database storage
+          const virtualSession: DashboardSession = {
+            id: `virtual-${userId}-${Date.now()}`,
+            userId,
+            dashboardType,
+            brandContext,
+            sessionToken: `super-admin-${Date.now()}`,
+            brandSwitches: [],
+            isActive: true,
+            startedAt: new Date().toISOString(),
+            expiresAt: new Date(Date.now() + 86400000).toISOString(), // 24 hours
+            createdAt: new Date().toISOString()
+          };
+          this.currentSession = virtualSession;
+          return virtualSession;
+        }
+      }
+
       // Check if user is super admin or admin - they can create sessions without permission checks
       const { data: userData } = await supabase
         .from('users')

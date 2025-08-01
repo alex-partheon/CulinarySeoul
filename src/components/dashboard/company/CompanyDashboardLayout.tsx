@@ -10,6 +10,9 @@ import {
   NotificationCenter, 
   UserProfileMenu 
 } from '@/components/dashboard/shared'
+import { BrandStoreSelector } from '@/components/dashboard/shared/BrandStoreSelector'
+import { DataScopeSelector } from '@/components/shared/DataScopeSelector'
+import { generateUnifiedNavigationSections, generateBreadcrumbs, NavigationSection } from '@/components/dashboard/shared/NavigationConfig'
 import { 
   ChevronLeft,
   ChevronRight,
@@ -43,23 +46,7 @@ interface CompanyDashboardLayoutProps {
   children?: React.ReactNode
 }
 
-interface NavigationItem {
-  name: string
-  href: string
-  icon: React.ElementType
-  badge?: string
-  disabled?: boolean
-  subMenu?: {
-    name: string
-    href: string
-    icon?: React.ElementType
-  }[]
-}
-
-interface NavigationSection {
-  title: string
-  items: NavigationItem[]
-}
+// Navigation interfaces moved to shared config
 
 export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps) {
   const location = useLocation()
@@ -80,112 +67,10 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
     })
   }, [location.pathname, children])
 
-  // Navigation sections with organized structure
-  const navigationSections: NavigationSection[] = [
-    {
-      title: '회사 개요',
-      items: [
-        {
-          name: '대시보드',
-          href: '/company',
-          icon: Home,
-        },
-        {
-          name: '실시간 현황',
-          href: '/company/realtime',
-          icon: Activity,
-          badge: 'New'
-        }
-      ]
-    },
-    {
-      title: '브랜드 관리',
-      items: [
-        {
-          name: '브랜드 목록',
-          href: '/company/brands',
-          icon: Building2,
-        },
-        {
-          name: '매장 관리',
-          href: '/company/stores',
-          icon: Store,
-        },
-        {
-          name: '성과 분석',
-          href: '/company/brands/performance',
-          icon: TrendingUp,
-        }
-      ]
-    },
-    {
-      title: '재고 관리',
-      items: [
-        {
-          name: '통합 재고 현황',
-          href: '/company/inventory',
-          icon: Package,
-        },
-        {
-          name: '발주 관리',
-          href: '/company/inventory/orders',
-          icon: ClipboardList,
-        },
-        {
-          name: '재고 이동',
-          href: '/company/inventory/transfers',
-          icon: Boxes,
-        }
-      ]
-    },
-    {
-      title: '매출 관리',
-      items: [
-        {
-          name: '매출 현황',
-          href: '/company/sales',
-          icon: DollarSign,
-          badge: '구현중',
-          disabled: true
-        },
-        {
-          name: '주문 관리',
-          href: '/company/orders',
-          icon: ShoppingBag,
-        },
-        {
-          name: '분석 & 리포트',
-          href: '/company/analytics',
-          icon: BarChart3,
-        }
-      ]
-    },
-    {
-      title: '시스템 관리',
-      items: [
-        {
-          name: '사용자 관리',
-          href: '/company/system/users',
-          icon: UserCog,
-        },
-        {
-          name: '권한 설정',
-          href: '/company/system/permissions',
-          icon: Shield,
-        },
-        {
-          name: '시스템 설정',
-          href: '/company/system/settings',
-          icon: Sliders,
-        },
-        {
-          name: '감사 로그',
-          href: '/company/system/audit-logs',
-          icon: ScrollText,
-        }
-      ]
-    }
-  ]
+  // Generate unified navigation sections
+  const navigationSections = generateUnifiedNavigationSections('company', {
+    userRole: 'admin' // TODO: Get from AuthContext
+  })
 
   // Update real-time indicators
   useEffect(() => {
@@ -206,43 +91,8 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
     )
   }
 
-  // Generate breadcrumbs
-  const generateBreadcrumbs = () => {
-    const paths = location.pathname.split('/').filter(Boolean)
-    const breadcrumbs = [{ name: '홈', href: '/' }]
-    
-    let currentPath = ''
-    paths.forEach((path, index) => {
-      currentPath += `/${path}`
-      let name = path
-      
-      // Map path segments to Korean names
-      const pathMap: Record<string, string> = {
-        'company': '회사 관리',
-        'brands': '브랜드 관리',
-        'inventory': '재고 관리',
-        'sales': '매출 관리',
-        'orders': '주문 관리',
-        'analytics': '분석 & 리포트',
-        'system': '시스템 관리',
-        'users': '사용자 관리',
-        'permissions': '권한 설정',
-        'settings': '시스템 설정',
-        'audit-logs': '감사 로그',
-        'stores': '매장 관리',
-        'performance': '성과 분석',
-        'transfers': '재고 이동',
-        'realtime': '실시간 현황'
-      }
-      
-      name = pathMap[path] || path
-      breadcrumbs.push({ name, href: currentPath })
-    })
-    
-    return breadcrumbs
-  }
-
-  const breadcrumbs = generateBreadcrumbs()
+  // Generate breadcrumbs using shared utility
+  const breadcrumbs = generateBreadcrumbs(location.pathname, 'company')
 
   return (
     <div className="min-h-screen bg-background">
@@ -479,8 +329,15 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
 
             {/* Header Actions */}
             <div className="flex items-center gap-3">
-              {/* Brand Switcher */}
-              <BrandSwitcher className="hidden md:flex" />
+              {/* Enhanced Data Scope Selector */}
+              <DataScopeSelector
+                dashboardType="company"
+                variant="compact"
+                size="sm"
+                className="hidden lg:flex"
+              />
+              
+              <Separator orientation="vertical" className="h-8 hidden lg:block" />
               
               {/* Global Search */}
               <GlobalSearch className="hidden sm:flex" />
@@ -493,6 +350,16 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
             </div>
           </div>
         </header>
+
+        {/* Data Scope Panel - More prominent display */}
+        <div className="bg-muted/50 border-b px-6 py-4">
+          <DataScopeSelector
+            dashboardType="company"
+            variant="default"
+            size="md"
+            className="max-w-4xl"
+          />
+        </div>
 
         {/* Main Content with proper spacing */}
         <main className="flex-1 bg-muted/30">

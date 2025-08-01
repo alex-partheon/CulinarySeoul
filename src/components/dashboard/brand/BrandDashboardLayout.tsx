@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { 
   ChevronLeft, 
+  ChevronRight,
   Menu,
   Home,
   Store,
@@ -21,13 +22,23 @@ import {
   TrendingUp,
   AlertCircle,
   CheckCircle,
-  Building2
+  Building2,
+  Activity,
+  ClipboardList,
+  Boxes,
+  ShoppingBag,
+  UserCog,
+  Shield,
+  ScrollText
 } from 'lucide-react'
 import { 
   NotificationCenter, 
   UserProfileMenu 
 } from '@/components/dashboard/shared'
+import { BrandStoreSelector } from '@/components/dashboard/shared/BrandStoreSelector'
+import { DataScopeSelector } from '@/components/shared/DataScopeSelector'
 import { CompanyConnectionStatus } from '@/components/dashboard/shared/CompanyConnectionStatus'
+import { generateUnifiedNavigationSections, generateBreadcrumbs } from '@/components/dashboard/shared/NavigationConfig'
 
 interface BrandDashboardLayoutProps {
   children?: React.ReactNode
@@ -59,45 +70,14 @@ export function BrandDashboardLayout({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isIndependentMode, setIsIndependentMode] = useState(mockBrandData.isIndependentMode)
 
-  // Brand-specific navigation
-  const brandNavigation = [
-    {
-      name: '브랜드 개요',
-      href: `/brand/${brandId || 'dashboard'}`,
-      icon: Home,
-    },
-    {
-      name: '매장 관리',
-      href: `/brand/${brandId}/stores`,
-      icon: Store,
-    },
-    {
-      name: '재고 관리',
-      href: `/brand/${brandId}/inventory`,
-      icon: Package,
-    },
-    {
-      name: '매출 분석',
-      href: `/brand/${brandId}/analytics`,
-      icon: BarChart3,
-    },
-    {
-      name: '웹사이트 관리',
-      href: `/brand/${brandId}/website`,
-      icon: Globe,
-      badge: 'Beta',
-    },
-    {
-      name: '마케팅 도구',
-      href: `/brand/${brandId}/marketing`,
-      icon: Megaphone,
-    },
-    {
-      name: '브랜드 설정',
-      href: `/brand/${brandId}/settings`,
-      icon: Settings,
-    }
-  ]
+  // Generate unified navigation sections using shared config
+  const brandNavigationSections = generateUnifiedNavigationSections('brand', { 
+    brandId,
+    userRole: 'manager' // TODO: Get from AuthContext
+  })
+
+  // Generate breadcrumb navigation
+  const breadcrumbs = generateBreadcrumbs(location.pathname, 'brand')
 
   // Apply brand theming dynamically
   const brandStyles = useMemo(() => ({
@@ -211,9 +191,9 @@ export function BrandDashboardLayout({
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="메인 네비게이션">
           <BrandSidebarContent 
-            navigation={brandNavigation} 
+            navigationSections={brandNavigationSections}
             collapsed={sidebarCollapsed}
             currentPath={location.pathname}
             brandColor={mockBrandData.primaryColor}
@@ -251,6 +231,23 @@ export function BrandDashboardLayout({
           </Button>
 
           <div className="flex-1">
+            {/* Breadcrumb Navigation */}
+            <nav className="flex items-center space-x-1 text-sm text-muted-foreground mb-1" aria-label="Breadcrumb">
+              {breadcrumbs.map((crumb, index) => (
+                <React.Fragment key={crumb.href}>
+                  {index > 0 && <span className="text-muted-foreground/50">/</span>}
+                  <Link
+                    to={crumb.href}
+                    className={cn(
+                      "hover:text-foreground transition-colors",
+                      index === breadcrumbs.length - 1 && "text-foreground font-medium"
+                    )}
+                  >
+                    {crumb.name}
+                  </Link>
+                </React.Fragment>
+              ))}
+            </nav>
             <h1 className="text-xl font-semibold text-foreground">{title}</h1>
             {subtitle && (
               <p className="text-sm text-muted-foreground">{subtitle}</p>
@@ -259,6 +256,16 @@ export function BrandDashboardLayout({
 
           {/* Right side actions */}
           <div className="flex items-center gap-3">
+            {/* Enhanced Data Scope Selector */}
+            <DataScopeSelector
+              dashboardType="brand"
+              variant="compact"
+              size="sm"
+              className="hidden lg:flex"
+            />
+            
+            <Separator orientation="vertical" className="h-8 hidden lg:block" />
+            
             {/* Company Connection Status */}
             <CompanyConnectionStatus 
               brandId={brandId || mockBrandData.id} 
@@ -285,6 +292,16 @@ export function BrandDashboardLayout({
           </div>
         )}
 
+        {/* Data Scope Panel - More prominent display */}
+        <div className="bg-muted/50 border-b px-6 py-4">
+          <DataScopeSelector
+            dashboardType="brand"
+            variant="default"
+            size="md"
+            className="max-w-4xl"
+          />
+        </div>
+
         {/* Page Content */}
         <main className="flex-1 bg-muted/30">
           {children || <Outlet />}
@@ -303,59 +320,103 @@ export function BrandDashboardLayout({
 }
 
 function BrandSidebarContent({ 
-  navigation, 
+  navigationSections, 
   collapsed,
   currentPath,
   brandColor
 }: { 
-  navigation: any[]
+  navigationSections: any[]
   collapsed: boolean
   currentPath: string
   brandColor: string
 }) {
+  const [expandedSections, setExpandedSections] = useState<string[]>(['브랜드 개요'])
+
+  const toggleSection = (title: string) => {
+    setExpandedSections(prev => 
+      prev.includes(title) 
+        ? prev.filter(t => t !== title)
+        : [...prev, title]
+    )
+  }
+
   return (
-    <div className="space-y-1">
-      {navigation.map((item) => {
-        const Icon = item.icon
-        const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/')
+    <div className="space-y-4">
+      {navigationSections.map((section) => {
+        const isExpanded = expandedSections.includes(section.title)
         
         return (
-          <Link
-            key={item.name}
-            to={item.href}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 group",
-              isActive 
-                ? 'bg-[var(--brand-primary)] text-white shadow-sm' 
-                : 'hover:bg-[var(--brand-primary)]/10 text-sidebar-foreground hover:text-[var(--brand-primary)]',
-              item.disabled && 'opacity-50 cursor-not-allowed pointer-events-none'
-            )}
-          >
-            <div className={cn(
-              "flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200",
-              isActive 
-                ? "bg-white/20" 
-                : "bg-[var(--brand-primary)]/10 group-hover:bg-[var(--brand-primary)]/20"
-            )}>
-              <Icon className="h-4 w-4 shrink-0" />
-            </div>
+          <div key={section.title}>
             {!collapsed && (
-              <>
-                <span className="flex-1">{item.name}</span>
-                {item.badge && (
-                  <Badge 
-                    variant={isActive ? "secondary" : "default"} 
-                    className={cn(
-                      "ml-auto h-5 px-1.5 text-xs",
-                      isActive && "bg-white/20 text-white border-white/30"
-                    )}
-                  >
-                    {item.badge}
-                  </Badge>
-                )}
-              </>
+              <button
+                onClick={() => toggleSection(section.title)}
+                className="flex items-center justify-between w-full px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors duration-200"
+                aria-expanded={isExpanded}
+                aria-controls={`section-${section.title}`}
+              >
+                <span>{section.title}</span>
+                <ChevronRight className={cn(
+                  "h-3 w-3 transition-transform duration-200",
+                  isExpanded && "rotate-90"
+                )} />
+              </button>
             )}
-          </Link>
+            
+            <div 
+              id={`section-${section.title}`}
+              className={cn(
+                "space-y-1 mt-1",
+                !collapsed && !isExpanded && "hidden"
+              )}
+            >
+              {section.items.map((item: any) => {
+                const Icon = item.icon
+                const isActive = currentPath === item.href ||
+                               currentPath.startsWith(item.href + '/')
+                
+                return (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 group",
+                      isActive 
+                        ? 'bg-[var(--brand-primary)] text-white shadow-sm' 
+                        : 'hover:bg-[var(--brand-primary)]/10 text-sidebar-foreground hover:text-[var(--brand-primary)]',
+                      item.disabled && 'opacity-50 cursor-not-allowed pointer-events-none'
+                    )}
+                    aria-current={isActive ? 'page' : undefined}
+                    aria-disabled={item.disabled}
+                  >
+                    <div className={cn(
+                      "flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200",
+                      isActive 
+                        ? "bg-white/20 shadow-sm" 
+                        : "bg-[var(--brand-primary)]/10 group-hover:bg-[var(--brand-primary)]/20"
+                    )}>
+                      <Icon className="h-4 w-4 shrink-0" />
+                    </div>
+                    {!collapsed && (
+                      <>
+                        <span className="flex-1">{item.name}</span>
+                        {item.badge && (
+                          <Badge 
+                            variant={item.disabled ? "secondary" : isActive ? "secondary" : "default"} 
+                            className={cn(
+                              "ml-auto h-5 px-1.5 text-xs",
+                              isActive && "bg-white/20 text-white border-white/30"
+                            )}
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </>
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
         )
       })}
     </div>

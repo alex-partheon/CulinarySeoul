@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { useAuth } from '../../contexts/AuthContext'
 import { SeparationReadiness } from '../../components/dashboard/brand/SeparationReadiness'
 import { StatsCard } from '../../components/ui/StatsCard'
@@ -14,12 +14,10 @@ import { useTheme } from '../../components/theme/BrandThemeProvider'
 export function BrandDashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { brandId } = useParams<{ brandId: string }>()
   const { brandTheme } = useTheme()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  // 임시 브랜드 ID (실제로는 user 정보에서 가져와야 함)
-  const brandId = brandTheme?.id || 'brand-1'
 
   const stats = [
     {
@@ -96,7 +94,7 @@ export function BrandDashboard() {
       ) : (
         <>
           {/* Separation Readiness Component */}
-          <SeparationReadiness brandId={brandId} />
+          <SeparationReadiness brandId={brandId || 'default'} />
         {/* 통계 카드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
@@ -164,7 +162,7 @@ export function BrandDashboard() {
               
               {/* 디지털 마케팅 분석 링크 */}
               <button 
-                onClick={() => navigate(`/brand/${brandId}/marketing-analytics`)}
+                onClick={() => navigate(`/brand/${brandId || 'default'}/marketing-analytics`)}
                 className="w-full p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-purple-100 transition-all duration-200 group"
               >
                 <div className="flex items-center justify-between">

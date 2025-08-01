@@ -1,0 +1,196 @@
+import { Theme } from '../types';
+
+export const defaultTheme: Theme = {
+  id: 'default',
+  name: 'CulinarySeoul Default',
+  colors: {
+    light: {
+      // Base colors
+      background: 'hsl(0 0% 98%)',
+      foreground: 'hsl(224 30% 10%)',
+      card: 'hsl(0 0% 100%)',
+      'card-foreground': 'hsl(224 30% 10%)',
+      popover: 'hsl(0 0% 100%)',
+      'popover-foreground': 'hsl(224 30% 10%)',
+      
+      // Brand colors - Purple Primary
+      primary: 'hsl(243 76% 59%)',
+      'primary-foreground': 'hsl(0 0% 100%)',
+      secondary: 'hsl(173 80% 40%)',
+      'secondary-foreground': 'hsl(0 0% 100%)',
+      accent: 'hsl(38 92% 50%)',
+      'accent-foreground': 'hsl(0 0% 0%)',
+      
+      // Semantic colors
+      muted: 'hsl(220 14% 96%)',
+      'muted-foreground': 'hsl(220 9% 46%)',
+      destructive: 'hsl(0 84% 60%)',
+      'destructive-foreground': 'hsl(0 0% 100%)',
+      
+      // Interface colors
+      border: 'hsl(220 13% 91%)',
+      input: 'hsl(220 13% 91%)',
+      ring: 'hsl(243 76% 59% / 0.3)',
+      
+      // Chart colors - Matching Cashup
+      'chart-1': 'hsl(243 76% 59%)',
+      'chart-2': 'hsl(173 80% 40%)',
+      'chart-3': 'hsl(38 92% 50%)',
+      'chart-4': 'hsl(330 82% 60%)',
+      'chart-5': 'hsl(142 71% 45%)',
+      
+      // Sidebar colors
+      sidebar: 'hsl(0 0% 100%)',
+      'sidebar-foreground': 'hsl(224 30% 10%)',
+      'sidebar-primary': 'hsl(243 76% 59%)',
+      'sidebar-primary-foreground': 'hsl(0 0% 100%)',
+      'sidebar-accent': 'hsl(38 92% 50%)',
+      'sidebar-accent-foreground': 'hsl(0 0% 0%)',
+      'sidebar-border': 'hsl(220 13% 91%)',
+      'sidebar-ring': 'hsl(243 76% 59% / 0.3)',
+    },
+    dark: {
+      // Base colors - Dark Mode
+      background: 'hsl(224 47% 6%)',
+      foreground: 'hsl(210 40% 98%)',
+      card: 'hsl(224 47% 9%)',
+      'card-foreground': 'hsl(210 40% 98%)',
+      popover: 'hsl(224 47% 9%)',
+      'popover-foreground': 'hsl(210 40% 98%)',
+      
+      // Brand colors - Dark Mode Adjusted
+      primary: 'hsl(243 89% 70%)',
+      'primary-foreground': 'hsl(224 47% 6%)',
+      secondary: 'hsl(173 66% 50%)',
+      'secondary-foreground': 'hsl(224 47% 6%)',
+      accent: 'hsl(38 97% 65%)',
+      'accent-foreground': 'hsl(224 47% 6%)',
+      
+      // Semantic colors - Dark Mode
+      muted: 'hsl(217 33% 17%)',
+      'muted-foreground': 'hsl(215 20% 65%)',
+      destructive: 'hsl(0 91% 71%)',
+      'destructive-foreground': 'hsl(224 47% 6%)',
+      
+      // Interface colors - Dark Mode
+      border: 'hsl(217 33% 17%)',
+      input: 'hsl(217 33% 17%)',
+      ring: 'hsl(243 89% 70% / 0.3)',
+      
+      // Chart colors - Dark Mode
+      'chart-1': 'hsl(243 89% 70%)',
+      'chart-2': 'hsl(173 66% 50%)',
+      'chart-3': 'hsl(38 97% 65%)',
+      'chart-4': 'hsl(330 85% 70%)',
+      'chart-5': 'hsl(142 69% 58%)',
+      
+      // Sidebar colors - Dark Mode
+      sidebar: 'hsl(224 47% 9%)',
+      'sidebar-foreground': 'hsl(210 40% 98%)',
+      'sidebar-primary': 'hsl(243 89% 70%)',
+      'sidebar-primary-foreground': 'hsl(224 47% 6%)',
+      'sidebar-accent': 'hsl(38 97% 65%)',
+      'sidebar-accent-foreground': 'hsl(224 47% 6%)',
+      'sidebar-border': 'hsl(217 33% 17%)',
+      'sidebar-ring': 'hsl(243 89% 70% / 0.3)',
+    },
+  },
+  typography: {
+    fontFamily: {
+      sans: '"DM Sans", "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+      serif: '"DM Sans", "Pretendard Variable", Pretendard, serif',
+      mono: '"Space Mono", monospace',
+    },
+    fontSize: {
+      xs: '0.75rem',
+      sm: '0.875rem',
+      base: '1rem',
+      lg: '1.125rem',
+      xl: '1.25rem',
+      '2xl': '1.5rem',
+      '3xl': '1.875rem',
+      '4xl': '2.25rem',
+      '5xl': '3rem',
+    },
+    fontWeight: {
+      thin: 100,
+      light: 300,
+      normal: 400,
+      medium: 500,
+      semibold: 600,
+      bold: 700,
+      extrabold: 800,
+    },
+    lineHeight: {
+      none: 1,
+      tight: 1.25,
+      snug: 1.375,
+      normal: 1.5,
+      relaxed: 1.625,
+      loose: 2,
+    },
+    letterSpacing: {
+      tighter: '-0.05em',
+      tight: '-0.025em',
+      normal: '0',
+      wide: '0.025em',
+      wider: '0.05em',
+      widest: '0.1em',
+    },
+  },
+  spacing: {
+    px: '1px',
+    0: '0',
+    0.5: '0.125rem',
+    1: '0.25rem',
+    1.5: '0.375rem',
+    2: '0.5rem',
+    2.5: '0.625rem',
+    3: '0.75rem',
+    3.5: '0.875rem',
+    4: '1rem',
+    5: '1.25rem',
+    6: '1.5rem',
+    7: '1.75rem',
+    8: '2rem',
+    9: '2.25rem',
+    10: '2.5rem',
+    11: '2.75rem',
+    12: '3rem',
+    14: '3.5rem',
+    16: '4rem',
+    20: '5rem',
+    24: '6rem',
+    28: '7rem',
+    32: '8rem',
+    36: '9rem',
+    40: '10rem',
+    44: '11rem',
+    48: '12rem',
+    52: '13rem',
+    56: '14rem',
+    60: '15rem',
+    64: '16rem',
+    72: '18rem',
+    80: '20rem',
+    96: '24rem',
+  },
+  radius: {
+    none: '0',
+    sm: '0.5rem',
+    DEFAULT: '0.75rem',
+    md: '0.625rem',
+    lg: '0.875rem',
+    xl: '1rem',
+    '2xl': '1.25rem',
+    '3xl': '1.5rem',
+    full: '9999px',
+  },
+  mode: 'light',
+  accessibility: {
+    highContrast: false,
+    reducedMotion: false,
+    focusIndicator: true,
+    screenReaderAnnouncements: true,
+  },
+};

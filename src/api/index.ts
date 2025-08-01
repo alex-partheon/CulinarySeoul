@@ -33,3 +33,6 @@ router.get('/health', (req, res) => {
 router.use('/inventory', inventoryRouter);
 
 export default router;
+
+// Client-side API exports
+export * from './profitability';

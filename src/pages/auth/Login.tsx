@@ -24,14 +24,18 @@ export function LoginPage() {
     setLoading(true)
 
     try {
+      console.log('[Login] Attempting login with:', formData.email)
       const { error } = await signIn(formData.email, formData.password)
       
       if (error) {
-        toast.error('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.')
+        console.error('[Login] Authentication error:', error)
+        toast.error(`로그인 실패: ${error.message || '이메일과 비밀번호를 확인해주세요.'}`)
       } else {
+        console.log('[Login] Login successful')
         toast.success('로그인되었습니다.')
       }
     } catch (error) {
+      console.error('[Login] Unexpected error:', error)
       toast.error('로그인 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)

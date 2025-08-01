@@ -613,14 +613,25 @@ export function SalesManagement() {
 **설명**: 양쪽 대시보드에서 실시간 재고 현황을 파악할 수 있는 시각화 및 알림 시스템 구현
 
 **완료 기준**:
-- [ ] 실시간 재고 현황 카드 컴포넌트
-- [ ] 재고 부족 알림 시스템
-- [ ] 재고 회전율 차트 (Recharts)
-- [ ] 유통기한 임박 알림
-- [ ] 대시보드별 재고 뷰 차별화
-- [ ] 재고 조정 인터페이스
-- [ ] 재고 이동 처리 (매장 간)
-- [ ] 모바일 반응형 지원
+- [x] 실시간 재고 현황 카드 컴포넌트 ✅
+- [x] 재고 부족 알림 시스템 ✅
+- [x] 재고 회전율 차트 (Recharts) ✅
+- [x] 유통기한 임박 알림 ✅
+- [x] 대시보드별 재고 뷰 차별화 ✅
+- [ ] 재고 조정 인터페이스 (UI 완료, 기능 구현 필요)
+- [ ] 재고 이동 처리 (매장 간) (UI 완료, 기능 구현 필요)
+- [x] 모바일 반응형 지원 ✅
+
+**구현 완료 사항**:
+- ✅ InventoryMetricCard: 재고 메트릭 표시 컴포넌트 (재고 가치, 부족 품목, 유통기한 임박, 회전율)
+- ✅ InventoryChart: Recharts 기반 재고 추이 차트 (재고 수준, 사용량, 예상 재고)
+- ✅ StockLevelIndicator: 카테고리별 재고 수준 시각화 (진행 바, 최소/최대 재고 표시)
+- ✅ ExpiryAlertPanel: 유통기한 임박 품목 관리 (액션 버튼: 사용/할인/폐기)
+- ✅ InventoryHeatmap: 매장별 재고 분포 히트맵 시각화
+- ✅ useRealtimeInventory: Supabase 실시간 구독 훅
+- ✅ Company Inventory 페이지: 통합 재고 관리 대시보드
+- ✅ Brand Inventory 페이지: 브랜드별 재고 관리 대시보드
+- ✅ DashboardLayout 스타일 업데이트: 모던한 디자인 적용
 
 **실시간 재고 대시보드**:
 ```typescript
@@ -795,418 +806,219 @@ export function ProfitabilityChart({ data, viewType }: ProfitabilityChartProps) 
 
 ---
 
-## 📋 Phase 3: 브랜드 분리 시스템 및 고급 기능 (Week 25-34)
+---
 
-### TASK-011: 브랜드 분리 준비도 평가 시스템 구현
-**우선순위**: P1 🟠 **크기**: XL (2주) **담당자**: Senior Lead Developer + Backend Developer  
-**개발방법론**: Assessment-Driven Design + TDD
+## 📝 향후 개발 계획
 
-**설명**: 브랜드의 독립 운영 가능성을 실시간으로 평가하고 분리 준비 상태를 추적하는 시스템 구현
+### Phase 3: 브랜드 분리 시스템 및 고급 기능
+
+> **📋 상세 내용**: [PHASE-3-FUTURE-DEVELOPMENT.md](./PHASE-3-FUTURE-DEVELOPMENT.md) 참조
+
+**개발 시기**: Phase 1-2 완료 후 재평가  
+**포함 기능**:
+- TASK-011: 브랜드 분리 준비도 평가 시스템
+- TASK-012: 자동 브랜드 분리 프로세스
+- TASK-013: Google Gemini AI 기반 재고 최적화
+
+**현재 상태**: 향후 개발 예정 (기본 시스템 안정화 우선)
+
+---
+
+### TASK-014: 브랜드 디지털 마케팅 분석 및 SNS 관리 시스템
+**우선순위**: P2 🟡 **크기**: L (1주) **담당자**: Senior Lead Developer  
+**개발방법론**: API Integration + Real-time Analytics
+
+**설명**: 구글 애널리틱스 API와 인스타그램 API를 활용한 브랜드별 디지털 마케팅 성과 분석 및 SNS 관리 시스템 구현
 
 **완료 기준**:
-- [ ] 분리 준비도 평가 알고리즘
-- [ ] 데이터 완성도 체크 시스템
-- [ ] 시스템 독립성 평가
-- [ ] 운영 준비도 평가
-- [ ] 하이브리드 권한 영향 분석
-- [ ] 분리 준비도 대시보드
-- [ ] 분리 계획 및 체크리스트
-- [ ] 분리 시뮬레이션 기능
+- [ ] 구글 애널리틱스 API 연동
+- [ ] 브랜드별 웹사이트 통계 대시보드
+- [ ] 페이지별 성과 분석 (조회수, 세션, 전환율)
+- [ ] 인스타그램 계정 정보 등록 및 관리
+- [ ] 인스타그램 컨텐츠 추적 및 분석
+- [ ] 팔로워 분석 및 성장 추적
+- [ ] SNS 성과 리포트 생성
+- [ ] 통합 마케팅 대시보드
 
-**분리 준비도 평가 시스템**:
+**브랜드 디지털 마케팅 분석 시스템**:
 ```typescript
-// lib/separation/readiness-assessment.ts
-export class BrandSeparationReadinessAssessment {
-  async evaluateSeparationReadiness(brandId: string): Promise<SeparationReadinessReport> {
-    const assessment = {
-      // 🆕 대시보드 독립성 체크
-      dashboardIndependence: await this.assessDashboardIndependence(brandId),
-      
-      // 🆕 하이브리드 권한 해제 영향 평가
-      hybridPermissionImpact: await this.assessHybridPermissionImpact(brandId),
-      
-      // 데이터 완성도
-      dataCompleteness: await this.assessDataCompleteness(brandId),
-      
-      // 시스템 독립성
-      systemIndependence: await this.assessSystemIndependence(brandId),
-      
-      // 운영 준비도
-      operationalReadiness: await this.assessOperationalReadiness(brandId)
-    };
+// lib/analytics/brand-analytics-manager.ts
+export class BrandAnalyticsManager {
+  private googleAnalytics: GoogleAnalyticsClient;
+  private instagramAPI: InstagramAPIClient;
+  
+  async getBrandWebsiteAnalytics(brandId: string, dateRange: DateRange): Promise<BrandAnalytics> {
+    // 1. 브랜드 도메인 정보 조회
+    const brandConfig = await this.getBrandAnalyticsConfig(brandId);
     
-    const overallScore = this.calculateReadinessScore(assessment);
+    // 2. 구글 애널리틱스 데이터 조회
+    const analyticsData = await this.googleAnalytics.getReports({
+      propertyId: brandConfig.gaPropertyId,
+      dateRanges: [dateRange],
+      dimensions: ['pagePath', 'pageTitle', 'country', 'deviceCategory'],
+      metrics: ['sessions', 'pageviews', 'bounceRate', 'sessionDuration']
+    });
+    
+    // 3. 페이지별 성과 분석
+    const pageAnalytics = await this.analyzePagePerformance(analyticsData);
     
     return {
       brandId,
-      overallReadinessScore: overallScore,
-      assessmentDetails: assessment,
-      recommendations: this.generateRecommendations(assessment),
-      estimatedSeparationTime: this.calculateSeparationTime(assessment),
-      criticalBlockers: this.identifyCriticalBlockers(assessment)
-    };
-  }
-  
-  // 🆕 대시보드 독립성 평가
-  private async assessDashboardIndependence(brandId: string) {
-    return {
-      brandDashboardCompleteness: await this.checkBrandDashboardFeatures(brandId),
-      companyDashboardDependencies: await this.identifyCompanyDashboardDependencies(brandId),
-      hybridUserCount: await this.countHybridPermissionUsers(brandId),
-      crossPlatformDataDependencies: await this.identifyCrossPlatformDependencies(brandId),
-      
-      readinessScore: 0, // 계산됨
-      blockers: [], // 식별됨
-      recommendations: [] // 생성됨
-    };
-  }
-}
-
-// 브랜드 분리 준비 상태 테이블
-CREATE TABLE brand_separation_readiness (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  brand_id UUID REFERENCES brands(id) ON DELETE CASCADE UNIQUE,
-  separation_status separation_status_enum DEFAULT 'not_ready',
-  readiness_score DECIMAL(5,2) DEFAULT 0.00,
-  data_completeness JSONB DEFAULT '{}',
-  critical_missing_data TEXT[] DEFAULT '{}',
-  system_independence JSONB DEFAULT '{}',
-  dependency_issues TEXT[] DEFAULT '{}',
-  operational_readiness JSONB DEFAULT '{}',
-  staff_capability_assessment JSONB DEFAULT '{}',
-  estimated_separation_date DATE,
-  separation_complexity separation_complexity_enum,
-  expected_downtime_hours INTEGER DEFAULT 0,
-  separation_checklist JSONB DEFAULT '{}',
-  completed_checklist_items TEXT[] DEFAULT '{}',
-  last_assessment_date TIMESTAMP,
-  assessed_by UUID REFERENCES users(id),
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-```
-
----
-
-### TASK-012: 자동 브랜드 분리 프로세스 구현
-**우선순위**: P1 🟠 **크기**: XL (2주) **담당자**: Senior Lead Developer + DevOps Engineer  
-**개발방법론**: Process-Automation + Infrastructure as Code
-
-**설명**: 브랜드 분리 시 새로운 독립 시스템을 자동으로 구축하고 데이터를 완전 이관하는 시스템 구현
-
-**완료 기준**:
-- [ ] 새로운 Supabase 프로젝트 자동 생성
-- [ ] 브랜드 데이터 완전 마이그레이션
-- [ ] 독립 대시보드 시스템 구성
-- [ ] 회사 대시보드 접근 차단
-- [ ] 하이브리드 권한 사용자 처리
-- [ ] 데이터 무결성 검증
-- [ ] 분리 과정 모니터링
-- [ ] 롤백 시스템 구현
-
-**브랜드 분리 자동화 시스템**:
-```typescript
-// lib/separation/brand-separation-engine.ts
-export class BrandSeparationEngine {
-  async executeBrandSeparation(brandId: string): Promise<SeparationResult> {
-    const separationId = generateSeparationId();
-    
-    try {
-      // Phase 0: 분리 준비도 최종 검증
-      const readiness = await this.finalReadinessCheck(brandId);
-      if (readiness.overallScore < 85) {
-        throw new Error('분리 준비도 부족: 85% 이상 필요');
-      }
-      
-      // Phase 1: 하이브리드 권한 사용자 처리
-      await this.handleHybridUsersSeparation(brandId);
-      
-      // Phase 2: 새로운 독립 시스템 구성
-      const independentSystem = await this.createIndependentSystem(brandId);
-      
-      // Phase 3: 데이터 마이그레이션
-      const migrationResult = await this.migrateAllBrandData(brandId, independentSystem);
-      
-      // Phase 4: 독립성 검증
-      const verificationResult = await this.verifyCompleteSeparation(brandId, independentSystem);
-      
-      // Phase 5: 원본 시스템에서 브랜드 데이터 정리
-      await this.cleanupOriginalSystem(brandId);
-      
-      return {
-        separationId,
-        success: true,
-        independentSystem,
-        migrationResult,
-        verificationResult,
-        completedAt: new Date()
-      };
-      
-    } catch (error) {
-      // 분리 실패 시 롤백
-      await this.rollbackSeparation(separationId, brandId);
-      throw error;
-    }
-  }
-  
-  private async createIndependentSystem(brandId: string): Promise<IndependentSystem> {
-    // 1. 새로운 Supabase 프로젝트 생성
-    const newProject = await this.createSupabaseProject({
-      name: `${brandData.name}-erp`,
-      region: 'ap-northeast-1',
-      tier: 'pro'
-    });
-    
-    // 2. 독립 대시보드 설정
-    const dashboardConfig = await this.setupIndependentDashboard(newProject, brandId);
-    
-    // 3. 회사 대시보드 연결 완전 차단
-    await this.blockCompanyDashboardAccess(brandId);
-    
-    return {
-      supabaseProject: newProject,
-      dashboardConfig,
-      independentDomain: `${brandData.domain}/dashboard`
-    };
-  }
-}
-
-// 브랜드 분리 이력 추적
-CREATE TABLE brand_separation_history (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  brand_id UUID REFERENCES brands(id),
-  separation_started_at TIMESTAMP,
-  separation_completed_at TIMESTAMP,
-  separation_initiated_by UUID REFERENCES users(id),
-  new_supabase_project_id VARCHAR(200),
-  new_domain VARCHAR(200),
-  new_system_credentials JSONB,
-  migrated_data_summary JSONB,
-  migration_verification_results JSONB,
-  separation_success BOOLEAN,
-  issues_encountered TEXT[],
-  rollback_performed BOOLEAN DEFAULT false,
-  post_separation_support_until DATE,
-  support_contact_info JSONB,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
----
-
-### TASK-013: Google Gemini AI 기반 재고 최적화 시스템
-**우선순위**: P2 🟡 **크기**: L (1주) **담당자**: Senior Lead Developer  
-**개발방법론**: AI-First Design + ML-Ops
-
-**설명**: Google Gemini AI를 활용한 재고 수요 예측, 발주 최적화, 폐기 최소화 시스템 구현
-
-**완료 기준**:
-- [ ] Google Gemini API 연동
-- [ ] 재고 데이터 벡터화 및 분석
-- [ ] 수요 예측 모델 구현
-- [ ] 최적 발주량 계산
-- [ ] 폐기 위험 예측
-- [ ] AI 추천 대시보드
-- [ ] 예측 정확도 측정
-- [ ] 학습 데이터 누적
-
-**AI 재고 최적화 엔진**:
-```typescript
-// lib/ai/inventory-optimizer.ts
-export class AIInventoryOptimizer {
-  private gemini: GoogleGeminiClient;
-  
-  async generateInventoryRecommendations(storeId: string): Promise<InventoryRecommendations> {
-    // 1. 과거 데이터 수집 (3개월)
-    const historicalData = await this.getHistoricalInventoryData(storeId, 90);
-    
-    // 2. Google Gemini로 패턴 분석
-    const analysis = await this.gemini.analyze({
-      prompt: `재고 관리 최적화 분석:
-        매장: ${storeId}
-        과거 3개월 데이터: ${JSON.stringify(historicalData)}
-        
-        다음을 분석해주세요:
-        1. 각 원재료별 수요 패턴
-        2. 계절성 및 트렌드
-        3. 폐기 위험이 높은 품목
-        4. 최적 발주 타이밍
-        5. 안전재고 수준 추천`,
-      temperature: 0.2,
-      maxTokens: 2000
-    });
-    
-    // 3. AI 분석 결과를 구조화된 추천으로 변환
-    const recommendations = this.parseAIRecommendations(analysis.response);
-    
-    // 4. 비즈니스 룰 적용
-    const finalRecommendations = await this.applyBusinessRules(recommendations);
-    
-    return {
-      storeId,
-      generatedAt: new Date(),
-      recommendations: finalRecommendations,
-      confidenceScore: analysis.confidence,
-      expectedSavings: this.calculateExpectedSavings(finalRecommendations)
-    };
-  }
-  
-  async predictDemand(materialId: string, days: number): Promise<DemandPrediction> {
-    const prediction = await this.gemini.predict({
-      model: 'gemini-pro',
-      input: {
-        materialId,
-        historicalUsage: await this.getUsageHistory(materialId),
-        seasonalFactors: await this.getSeasonalFactors(materialId),
-        marketTrends: await this.getMarketTrends(materialId)
+      period: dateRange,
+      overview: {
+        totalSessions: analyticsData.totals.sessions,
+        totalPageviews: analyticsData.totals.pageviews,
+        averageBounceRate: analyticsData.totals.bounceRate,
+        averageSessionDuration: analyticsData.totals.sessionDuration
       },
-      predictionDays: days
-    });
+      pageAnalytics,
+      trafficSources: await this.getTrafficSources(analyticsData),
+      deviceBreakdown: await this.getDeviceBreakdown(analyticsData)
+    };
+  }
+  
+  async getInstagramAnalytics(brandId: string): Promise<InstagramAnalytics> {
+    // 1. 브랜드 인스타그램 계정 정보 조회
+    const instagramAccount = await this.getBrandInstagramAccount(brandId);
+    
+    // 2. 인스타그램 기본 정보 조회
+    const accountInfo = await this.instagramAPI.getAccountInfo(instagramAccount.accessToken);
+    
+    // 3. 최근 컨텐츠 성과 분석
+    const recentPosts = await this.instagramAPI.getRecentMedia(instagramAccount.accessToken, 20);
+    const postsAnalytics = await this.analyzePostsPerformance(recentPosts);
     
     return {
-      materialId,
-      predictedDemand: prediction.values,
-      confidenceInterval: prediction.confidence,
-      predictionAccuracy: await this.calculateAccuracy(materialId)
+      brandId,
+      accountInfo: {
+        username: accountInfo.username,
+        followersCount: accountInfo.followers_count,
+        followingCount: accountInfo.follows_count,
+        mediaCount: accountInfo.media_count
+      },
+      postsAnalytics,
+      engagementRate: this.calculateEngagementRate(postsAnalytics),
+      topPerformingPosts: this.getTopPerformingPosts(postsAnalytics, 5)
     };
   }
 }
 
-// AI 추천 대시보드
-export function AIRecommendationsDashboard() {
-  const [recommendations, setRecommendations] = useState<InventoryRecommendations>();
+// 인스타그램 계정 관리
+export class InstagramAccountManager {
+  async registerInstagramAccount(brandId: string, accountData: InstagramAccountData): Promise<void> {
+    // 1. 인스타그램 계정 유효성 검증
+    const isValid = await this.validateInstagramAccount(accountData.accessToken);
+    if (!isValid) {
+      throw new Error('유효하지 않은 인스타그램 계정입니다.');
+    }
+    
+    // 2. 계정 정보 저장
+    await this.saveInstagramAccount({
+      brandId,
+      username: accountData.username,
+      accessToken: accountData.accessToken,
+      refreshToken: accountData.refreshToken,
+      registeredAt: new Date()
+    });
+    
+    // 3. 초기 데이터 동기화
+    await this.syncInitialData(brandId);
+  }
+}
+
+// 통합 마케팅 대시보드 컴포넌트
+export function BrandDigitalMarketingDashboard({ brandId }: { brandId: string }) {
+  const [websiteAnalytics, setWebsiteAnalytics] = useState<BrandAnalytics>();
+  const [instagramAnalytics, setInstagramAnalytics] = useState<InstagramAnalytics>();
   const [loading, setLoading] = useState(false);
   
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">AI 재고 최적화 추천</h2>
-        <Button onClick={generateRecommendations} disabled={loading}>
-          {loading ? '분석 중...' : '추천 생성'}
+        <h2 className="text-2xl font-bold">디지털 마케팅 분석</h2>
+        <Button onClick={refreshAllData} disabled={loading}>
+          {loading ? '업데이트 중...' : '데이터 새로고침'}
         </Button>
       </div>
       
-      {recommendations && (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <RecommendationCard
-              title="예상 절약 금액"
-              value={recommendations.expectedSavings}
-              format="currency"
-              trend="up"
-            />
-            <RecommendationCard
-              title="추천 정확도"
-              value={recommendations.confidenceScore}
-              format="percentage"
-            />
-            <RecommendationCard
-              title="폐기 위험 감소"
-              value={calculateWasteReduction(recommendations)}
-              format="percentage"
-              trend="down"
-            />
-          </div>
-          
-          <RecommendationsList recommendations={recommendations.recommendations} />
-        </>
-      )}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList>
+          <TabsTrigger value="overview">종합 현황</TabsTrigger>
+          <TabsTrigger value="website">웹사이트 분석</TabsTrigger>
+          <TabsTrigger value="instagram">인스타그램</TabsTrigger>
+          <TabsTrigger value="reports">리포트</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="overview">
+          <MarketingOverviewDashboard 
+            websiteData={websiteAnalytics} 
+            instagramData={instagramAnalytics} 
+          />
+        </TabsContent>
+        
+        <TabsContent value="website">
+          <GoogleAnalyticsWidget analytics={websiteAnalytics} />
+        </TabsContent>
+        
+        <TabsContent value="instagram">
+          <InstagramAnalyticsWidget analytics={instagramAnalytics} />
+        </TabsContent>
+        
+        <TabsContent value="reports">
+          <MarketingPerformanceReport brandId={brandId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
 ```
 
----
+**데이터베이스 스키마**:
+```sql
+-- 브랜드 구글 애널리틱스 설정
+CREATE TABLE brand_analytics_config (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  brand_id UUID REFERENCES brands(id) ON DELETE CASCADE UNIQUE,
+  ga_property_id VARCHAR(50) NOT NULL,
+  ga_measurement_id VARCHAR(50),
+  domain VARCHAR(200) NOT NULL,
+  tracking_enabled BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
 
-### TASK-014: 브랜드 웹사이트 통합 관리 시스템
-**우선순위**: P2 🟡 **크기**: L (1주) **담당자**: Senior Frontend Developer  
-**개발방법론**: Headless CMS + JAMstack
+-- 브랜드 인스타그램 계정
+CREATE TABLE brand_instagram_accounts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  brand_id UUID REFERENCES brands(id) ON DELETE CASCADE UNIQUE,
+  username VARCHAR(100) NOT NULL,
+  instagram_user_id VARCHAR(50) NOT NULL,
+  access_token TEXT NOT NULL,
+  refresh_token TEXT,
+  token_expires_at TIMESTAMP,
+  account_type VARCHAR(20) DEFAULT 'personal',
+  is_active BOOLEAN DEFAULT true,
+  last_sync_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
 
-**설명**: 브랜드 공개 웹사이트와 CMS 블로그를 통합 관리할 수 있는 시스템 구현
-
-**완료 기준**:
-- [ ] 브랜드 공개 페이지 관리
-- [ ] CMS 블로그 시스템
-- [ ] SEO 최적화 도구
-- [ ] 콘텐츠 편집기 (WYSIWYG)
-- [ ] 미디어 관리 시스템
-- [ ] 소셜 미디어 연동
-- [ ] 성과 분석 (조회수, 참여도)
-- [ ] 모바일 최적화
-
-**브랜드 웹사이트 관리 시스템**:
-```typescript
-// lib/website/brand-website-manager.ts
-export class BrandWebsiteManager {
-  async updateBrandWebsite(brandId: string, updates: WebsiteUpdates): Promise<void> {
-    // 1. 브랜드 테마 적용
-    const brandTheme = await this.getBrandTheme(brandId);
-    
-    // 2. 콘텐츠 업데이트
-    await this.updateContent({
-      ...updates,
-      theme: brandTheme,
-      lastUpdated: new Date()
-    });
-    
-    // 3. SEO 메타데이터 자동 생성
-    const seoMetadata = await this.generateSEOMetadata(updates);
-    await this.updateSEOSettings(brandId, seoMetadata);
-    
-    // 4. 사이트맵 업데이트
-    await this.updateSitemap(brandId);
-    
-    // 5. CDN 캐시 무효화
-    await this.invalidateCache(brandId);
-  }
-  
-  async manageBlog(brandId: string, action: BlogAction): Promise<BlogPost> {
-    switch (action.type) {
-      case 'create':
-        return this.createBlogPost(brandId, action.data);
-      case 'update':
-        return this.updateBlogPost(brandId, action.id, action.data);
-      case 'publish':
-        return this.publishBlogPost(brandId, action.id);
-      case 'schedule':
-        return this.scheduleBlogPost(brandId, action.id, action.publishDate);
-    }
-  }
-}
-
-// 브랜드 웹사이트 컴포넌트
-export function BrandWebsiteManager({ brandId }: { brandId: string }) {
-  const [pages, setPages] = useState<WebsitePage[]>([]);
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [analytics, setAnalytics] = useState<WebsiteAnalytics>();
-  
-  return (
-    <Tabs defaultValue="pages" className="w-full">
-      <TabsList>
-        <TabsTrigger value="pages">페이지 관리</TabsTrigger>
-        <TabsTrigger value="blog">블로그</TabsTrigger>
-        <TabsTrigger value="seo">SEO</TabsTrigger>
-        <TabsTrigger value="analytics">분석</TabsTrigger>
-      </TabsList>
-      
-      <TabsContent value="pages">
-        <PageManager pages={pages} onUpdate={handlePageUpdate} />
-      </TabsContent>
-      
-      <TabsContent value="blog">
-        <BlogManager posts={blogPosts} onUpdate={handleBlogUpdate} />
-      </TabsContent>
-      
-      <TabsContent value="seo">
-        <SEOManager brandId={brandId} />
-      </TabsContent>
-      
-      <TabsContent value="analytics">
-        <WebsiteAnalytics data={analytics} />
-      </TabsContent>
-    </Tabs>
-  );
-}
+-- 인스타그램 컨텐츠 추적
+CREATE TABLE instagram_content_tracking (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  brand_id UUID REFERENCES brands(id) ON DELETE CASCADE,
+  instagram_media_id VARCHAR(50) NOT NULL,
+  media_type VARCHAR(20) NOT NULL,
+  caption TEXT,
+  permalink VARCHAR(500),
+  thumbnail_url VARCHAR(500),
+  timestamp TIMESTAMP,
+  like_count INTEGER DEFAULT 0,
+  comments_count INTEGER DEFAULT 0,
+  engagement_rate DECIMAL(5,2),
+  tracked_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(brand_id, instagram_media_id)
+);
 ```
 
 ---

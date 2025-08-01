@@ -1,10 +1,11 @@
 import React from 'react'
 import { Toaster } from 'react-hot-toast'
 import { AppRouter } from './router'
+import { BrandThemeProvider } from './components/theme/BrandThemeProvider'
 
 function App() {
   return (
-    <>
+    <BrandThemeProvider>
       <AppRouter />
       <Toaster 
         position="top-right"
@@ -30,7 +31,7 @@ function App() {
           },
         }}
       />
-    </>
+    </BrandThemeProvider>
   )
 }
 

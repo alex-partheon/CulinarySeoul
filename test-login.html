@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CulinarySeoul Login Test</title>
+</head>
+<body>
+    <h1>테스트용 로그인 페이지</h1>
+    <p>브라우저에서 직접 테스트해보세요:</p>
+    
+    <ol>
+        <li><strong>개발 서버 접속</strong>: <a href="http://localhost:5173" target="_blank">http://localhost:5173</a></li>
+        <li><strong>예상 동작</strong>: 자동으로 /login 페이지로 리다이렉트됩니다</li>
+        <li><strong>이것은 정상적인 보안 동작입니다</strong></li>
+    </ol>
+    
+    <h2>AuthContext의 Fallback 메커니즘</h2>
+    <p>코드에서 확인한 바에 따르면, AuthContext는 데이터베이스 오류 시 자동으로 슈퍼어드민 사용자를 생성합니다:</p>
+    
+    <pre>
+// AuthContext.tsx 85-120번 줄
+if (error.code === 'PGRST116' || error.code === '42P17') {
+  const defaultUser = {
+    id: supabaseUser.id,
+    email: supabaseUser.email!,
+    role: UserRole.SUPER_ADMIN,
+    // ... 기타 속성들
+  }
+  setUser(defaultUser)
+}
+    </pre>
+    
+    <h2>실제 테스트 방법</h2>
+    <ol>
+        <li>브라우저에서 <code>http://localhost:5173</code> 접속</li>
+        <li>개발자 도구 열기 (F12)</li>
+        <li>콘솔에서 다음 실행:
+            <pre>localStorage.clear(); sessionStorage.clear(); location.reload();</pre>
+        </li>
+        <li>/company로 직접 이동해보기</li>
+        <li>콘솔 로그 확인하기</li>
+    </ol>
+    
+    <h2>예상 결과</h2>
+    <p><strong>404가 아니라 로그인 페이지로 리다이렉트되어야 합니다.</strong></p>
+    <p>만약 실제로 404 페이지가 보인다면, 그것은 다른 문제입니다.</p>
+</body>
+</html>

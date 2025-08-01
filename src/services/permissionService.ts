@@ -28,6 +28,44 @@ export class PermissionService {
       const cached = permissionCache.get(cacheKey);
       if (cached) return cached;
 
+      // Check if user is super_admin first - they get full permissions without database lookup
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .single();
+
+      if (userData?.role === 'super_admin') {
+        const superAdminPermissions: UserPermissions = {
+          userId,
+          canAccessCompanyDashboard: true,
+          canAccessBrandDashboard: true,
+          hybridPermissions: {
+            canSwitchBetweenDashboards: true,
+            crossPlatformDataAccess: true,
+            brandContextSwitching: true,
+            globalAdminAccess: true
+          },
+          companyDashboardPermissions: {
+            role: 'super_admin',
+            modules: {},
+            actions: {}
+          },
+          brandDashboardPermissions: {
+            role: 'super_admin',
+            modules: {},
+            actions: {}
+          },
+          crossPlatformAccess: {
+            allowedBrands: ['*'],
+            allowedStores: ['*'],
+            dataSharing: true
+          }
+        };
+        permissionCache.set(cacheKey, superAdminPermissions);
+        return superAdminPermissions;
+      }
+
       const { data, error } = await supabase
         .from('dashboard_access_permissions')
         .select('*')
@@ -36,11 +74,44 @@ export class PermissionService {
 
       if (error) {
         console.error('권한 조회 오류:', error);
+        
+        // For admin users without permission entries, provide default admin permissions
+        if (userData?.role === 'admin') {
+          const adminPermissions: UserPermissions = {
+            userId,
+            canAccessCompanyDashboard: true,
+            canAccessBrandDashboard: false,
+            hybridPermissions: {
+              canSwitchBetweenDashboards: false,
+              crossPlatformDataAccess: false,
+              brandContextSwitching: false,
+              globalAdminAccess: false
+            },
+            companyDashboardPermissions: {
+              role: 'admin',
+              modules: {},
+              actions: {}
+            },
+            brandDashboardPermissions: {
+              role: 'viewer',
+              modules: {},
+              actions: {}
+            },
+            crossPlatformAccess: {
+              allowedBrands: [],
+              allowedStores: [],
+              dataSharing: false
+            }
+          };
+          permissionCache.set(cacheKey, adminPermissions);
+          return adminPermissions;
+        }
+        
         return null;
       }
 
       const permissions: UserPermissions = {
-        userId: data.user_id,
+        userId: data.user_id || '',
         canAccessCompanyDashboard: data.can_access_company_dashboard ?? false,
         canAccessBrandDashboard: data.can_access_brand_dashboard ?? false,
         hybridPermissions: (data.hybrid_permissions as unknown as HybridPermissions) ?? {
@@ -87,8 +158,26 @@ export class PermissionService {
     brandId?: string
   ): Promise<boolean> {
     try {
+      // Check if user is super admin first
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .single();
+
+      // Super admin can access any dashboard
+      if (userData?.role === 'super_admin') {
+        return true;
+      }
+
       const permissions = await this.getUserPermissions(userId);
-      if (!permissions) return false;
+      if (!permissions) {
+        // For regular admin users, allow company dashboard access even without permission entries
+        if (userData?.role === 'admin' && dashboardType === 'company') {
+          return true;
+        }
+        return false;
+      }
 
       if (dashboardType === 'company') {
         return permissions.canAccessCompanyDashboard;
@@ -100,7 +189,7 @@ export class PermissionService {
         // 특정 브랜드 접근 권한 확인
         if (brandId) {
           const allowedBrands = permissions.crossPlatformAccess.allowedBrands;
-          return allowedBrands.length === 0 || allowedBrands.includes(brandId);
+          return allowedBrands.length === 0 || allowedBrands.includes(brandId) || allowedBrands.includes('*');
         }
 
         return true;
@@ -122,11 +211,38 @@ export class PermissionService {
     brandContext?: string
   ): Promise<DashboardSession | null> {
     try {
+      // Check if user is super admin or admin - they can create sessions without permission checks
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .single();
+
+      const isSuperAdmin = userData?.role === 'super_admin';
+      const isAdmin = userData?.role === 'admin';
+
+      // For non-admin users, check permissions
+      if (!isSuperAdmin && !isAdmin) {
+        const canAccess = await this.canAccessDashboard(userId, dashboardType, brandContext);
+        if (!canAccess) {
+          console.warn(`User ${userId} cannot access ${dashboardType} dashboard`);
+          return null;
+        }
+      }
+
       // 기존 활성 세션 비활성화
       await this.deactivateUserSessions(userId);
 
       const sessionToken = this.generateSessionToken();
-      const expiresAt = new Date(Date.now() + parseInt(process.env.VITE_SESSION_TIMEOUT || '3600000'));
+      
+      // Super admin의 경우 매우 긴 세션 timeout 적용
+      let sessionTimeout = parseInt(import.meta.env.VITE_SESSION_TIMEOUT || '3600000');
+      if (isSuperAdmin && import.meta.env.VITE_SUPER_ADMIN_NO_TIMEOUT === 'true') {
+        sessionTimeout = 86400000; // 24시간
+        console.log('[PermissionService] Extended session timeout for super admin:', sessionTimeout);
+      }
+      
+      const expiresAt = new Date(Date.now() + sessionTimeout);
 
       const { data, error } = await supabase
         .from('dashboard_sessions')
@@ -149,14 +265,14 @@ export class PermissionService {
 
       const session: DashboardSession = {
         id: data.id,
-        userId: data.user_id ?? '',
+        userId: data.user_id || '',
         dashboardType: data.dashboard_type,
-        brandContext: data.brand_context ?? undefined,
+        brandContext: data.brand_context || undefined,
         sessionToken: data.session_token,
-        brandSwitches: (data.brand_switches as any[]) ?? [],
-        isActive: data.is_active ?? false,
-        startedAt: data.started_at ?? '',
-        expiresAt: data.expires_at ?? undefined,
+        brandSwitches: (data.brand_switches as any[]) || [],
+        isActive: data.is_active || false,
+        startedAt: data.started_at || '',
+        expiresAt: data.expires_at || undefined,
         createdAt: data.created_at || new Date().toISOString()
       }
 
@@ -191,7 +307,7 @@ export class PermissionService {
       }
 
       // 브랜드 접근 권한 확인
-      const canAccess = await this.canAccessDashboard(session.user_id, 'brand', toBrand);
+      const canAccess = await this.canAccessDashboard(session.user_id || '', 'brand', toBrand);
       if (!canAccess) {
         toast.error('해당 브랜드에 접근할 권한이 없습니다.');
         return false;
@@ -199,10 +315,10 @@ export class PermissionService {
 
       const brandSwitches = session.brand_switches as any[] || [];
       brandSwitches.push({
-        fromBrand,
+        fromBrand: fromBrand || undefined,
         toBrand,
         timestamp: new Date().toISOString(),
-        reason
+        reason: reason || undefined
       });
 
       const { error: updateError } = await supabase
@@ -360,19 +476,19 @@ export class PermissionService {
       const auditLogs: PermissionAuditLog[] = (data || []).map(log => ({
         id: log.id,
         userId: log.user_id || '',
-        action: log.action,
-        timestamp: log.timestamp,
-        fromDashboard: log.fromDashboard,
-        toDashboard: log.toDashboard,
-        brandContext: log.brandContext,
-        reason: log.reason,
-        ipAddress: log.ipAddress,
-        changedBy: log.changed_by,
-        permissionType: log.permission_type,
-        oldPermissions: log.old_permissions,
-        newPermissions: log.new_permissions,
-        changeReason: log.change_reason,
-        dashboardType: log.dashboard_type,
+        action: log.action || '',
+        timestamp: log.timestamp || '',
+        fromDashboard: log.fromDashboard || undefined,
+        toDashboard: log.toDashboard || undefined,
+        brandContext: log.brandContext || undefined,
+        reason: log.reason || undefined,
+        ipAddress: log.ipAddress || undefined,
+        changedBy: log.changed_by || undefined,
+        permissionType: log.permission_type || 'unknown',
+        oldPermissions: log.old_permissions || undefined,
+        newPermissions: log.new_permissions || undefined,
+        changeReason: log.change_reason || undefined,
+        dashboardType: log.dashboard_type || undefined,
         createdAt: log.created_at || log.timestamp
       }));
 

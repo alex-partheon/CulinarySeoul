@@ -1,13 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router'
 import { useAuth } from '../../contexts/AuthContext'
-import { DashboardLayout } from '../../components/layouts/DashboardLayout'
+import { SeparationReadiness } from '../../components/dashboard/brand/SeparationReadiness'
 import { StatsCard } from '../../components/ui/StatsCard'
 import { SalesChart } from '../../components/dashboard/SalesChart'
 import { PopularItems } from '../../components/dashboard/PopularItems'
 import { RecentOrders } from '../../components/dashboard/RecentOrders'
+import { Skeleton } from '../../components/ui/skeleton'
+import { Alert, AlertDescription, AlertTitle } from '../../components/ui/alert'
+import { AlertCircle } from 'lucide-react'
+import { useTheme } from '../../components/theme/BrandThemeProvider'
 
 export function BrandDashboard() {
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const { brandTheme } = useTheme()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // 임시 브랜드 ID (실제로는 user 정보에서 가져와야 함)
+  const brandId = brandTheme?.id || 'brand-1'
 
   const stats = [
     {
@@ -19,7 +31,8 @@ export function BrandDashboard() {
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
         </svg>
-      )
+      ),
+      className: 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200'
     },
     {
       title: '오늘 주문',
@@ -30,7 +43,8 @@ export function BrandDashboard() {
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
-      )
+      ),
+      className: 'bg-gradient-to-br from-green-50 to-green-100 border-green-200'
     },
     {
       title: '활성 고객',
@@ -41,7 +55,8 @@ export function BrandDashboard() {
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
-      )
+      ),
+      className: 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200'
     },
     {
       title: '평균 주문 금액',
@@ -52,13 +67,36 @@ export function BrandDashboard() {
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
-      )
+      ),
+      className: 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200'
     }
   ]
 
   return (
-    <DashboardLayout title="브랜드 관리 대시보드" subtitle={`CulinarySeoul 브랜드 현황`}>
-      <div className="space-y-6">
+    <div className="space-y-6">
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>오류</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Loading State */}
+      {loading ? (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+          <Skeleton className="h-96" />
+        </div>
+      ) : (
+        <>
+          {/* Separation Readiness Component */}
+          <SeparationReadiness brandId={brandId} />
         {/* 통계 카드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
@@ -123,6 +161,28 @@ export function BrandDashboard() {
                   </svg>
                 </div>
               </div>
+              
+              {/* 디지털 마케팅 분석 링크 */}
+              <button 
+                onClick={() => navigate(`/brand/${brandId}/marketing-analytics`)}
+                className="w-full p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-purple-100 transition-all duration-200 group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-blue-900 group-hover:text-blue-800">
+                      디지털 마케팅 분석
+                    </p>
+                    <p className="text-xs text-blue-700 group-hover:text-blue-600">
+                      웹사이트 & SNS 통합 성과 분석
+                    </p>
+                  </div>
+                  <div className="text-blue-600 group-hover:text-blue-700 transform group-hover:translate-x-1 transition-all">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -168,7 +228,8 @@ export function BrandDashboard() {
             </button>
           </div>
         </div>
-      </div>
-    </DashboardLayout>
+        </>
+      )}
+    </div>
   )
 }

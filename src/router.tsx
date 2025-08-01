@@ -2,16 +2,19 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import { RootLayout } from './components/layouts/RootLayout'
 import { CompanyDashboard } from './pages/company/Dashboard'
 import { BrandDashboard } from './pages/brand/Dashboard'
+import { CompanyDashboardLayout } from './components/dashboard/company/CompanyDashboardLayout'
+import { BrandDashboardLayout } from './components/dashboard/brand/BrandDashboardLayout'
 import { LoginPage } from './pages/auth/Login'
 import { NotFoundPage } from './pages/NotFound'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { DashboardRedirect } from './components/auth/DashboardRedirect'
 import { AuthProvider } from './contexts/AuthContext'
 import ShadcnTest from './pages/ShadcnTest'
 
 // 회사 관리 라우트
 const companyRoutes = {
   path: '/company',
-  element: <ProtectedRoute><CompanyDashboard /></ProtectedRoute>,
+  element: <ProtectedRoute><CompanyDashboardLayout /></ProtectedRoute>,
   children: [
     {
       index: true,
@@ -19,27 +22,27 @@ const companyRoutes = {
     },
     {
       path: 'users',
-      lazy: () => import('./pages/company/Users')
+      lazy: () => import('./pages/company/Users').then(m => ({ Component: m.default }))
     },
     {
       path: 'inventory',
-      lazy: () => import('./pages/company/Inventory')
+      lazy: () => import('./pages/company/Inventory').then(m => ({ Component: m.default }))
     },
     {
       path: 'orders',
-      lazy: () => import('./pages/company/Orders')
+      lazy: () => import('./pages/company/Orders').then(m => ({ Component: m.default }))
     },
     {
       path: 'suppliers',
-      lazy: () => import('./pages/company/Suppliers')
+      lazy: () => import('./pages/company/Suppliers').then(m => ({ Component: m.default }))
     },
     {
       path: 'reports',
-      lazy: () => import('./pages/company/Reports')
+      lazy: () => import('./pages/company/Reports').then(m => ({ Component: m.default }))
     },
     {
       path: 'settings',
-      lazy: () => import('./pages/company/Settings')
+      lazy: () => import('./pages/company/Settings').then(m => ({ Component: m.default }))
     }
   ]
 }
@@ -47,7 +50,7 @@ const companyRoutes = {
 // 브랜드 관리 라우트
 const brandRoutes = {
   path: '/brand',
-  element: <ProtectedRoute><BrandDashboard /></ProtectedRoute>,
+  element: <ProtectedRoute><BrandDashboardLayout /></ProtectedRoute>,
   children: [
     {
       index: true,
@@ -55,27 +58,39 @@ const brandRoutes = {
     },
     {
       path: 'menu',
-      lazy: () => import('./pages/brand/Menu')
+      lazy: () => import('./pages/brand/Menu').then(m => ({ Component: m.default }))
     },
     {
       path: 'orders',
-      lazy: () => import('./pages/brand/Orders')
+      lazy: () => import('./pages/brand/Orders').then(m => ({ Component: m.default }))
     },
     {
       path: 'customers',
-      lazy: () => import('./pages/brand/Customers')
+      lazy: () => import('./pages/brand/Customers').then(m => ({ Component: m.default }))
     },
     {
       path: 'analytics',
-      lazy: () => import('./pages/brand/Analytics')
+      lazy: () => import('./pages/brand/Analytics').then(m => ({ Component: m.default }))
     },
     {
       path: 'marketing',
-      lazy: () => import('./pages/brand/Marketing')
+      lazy: () => import('./pages/brand/Marketing').then(m => ({ Component: m.default }))
     },
     {
       path: 'settings',
-      lazy: () => import('./pages/brand/Settings')
+      lazy: () => import('./pages/brand/Settings').then(m => ({ Component: m.default }))
+    },
+    {
+      path: 'inventory',
+      lazy: () => import('./pages/brand/Inventory').then(m => ({ Component: m.default }))
+    },
+    {
+      path: ':brandId/marketing-analytics',
+      lazy: () => import('./pages/brand/marketing-analytics').then(m => ({ Component: m.BrandMarketingAnalyticsPage }))
+    },
+    {
+      path: ':brandId/stores',
+      lazy: () => import('./pages/brand/StoreManagement').then(m => ({ Component: m.default }))
     }
   ]
 }
@@ -85,11 +100,11 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
-    errorBoundary: NotFoundPage,
+    errorElement: <NotFoundPage />, // ErrorBoundary 대신 errorElement 사용
     children: [
       {
         index: true,
-        element: <ProtectedRoute><CompanyDashboard /></ProtectedRoute>
+        element: <ProtectedRoute><DashboardRedirect /></ProtectedRoute>
       },
       {
         path: 'login',
@@ -102,6 +117,10 @@ export const router = createBrowserRouter([
       {
         path: 'style-guide',
         lazy: () => import('./pages/StyleGuide').then(m => ({ Component: m.StyleGuide }))
+      },
+      {
+        path: 'theme-demo',
+        lazy: () => import('./components/theme/ThemeDemo').then(m => ({ Component: m.ThemeDemo }))
       },
       companyRoutes,
       brandRoutes,

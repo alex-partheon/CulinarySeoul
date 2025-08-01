@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CulinarySeoul 로그인 디버깅</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .code { background: #f5f5f5; padding: 10px; font-family: monospace; }
+        button { padding: 10px 15px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 CulinarySeoul 로그인 디버깅 도구</h1>
+    
+    <div class="section">
+        <h2>1. 개발 서버 접속</h2>
+        <p><a href="http://localhost:5173" target="_blank">http://localhost:5173</a></p>
+        <p>서버가 실행 중인지 확인하세요.</p>
+    </div>
+    
+    <div class="section">
+        <h2>2. 브라우저 콘솔에서 실행할 테스트 코드</h2>
+        <p>개발자 도구(F12)를 열고 다음 코드를 복사해서 실행하세요:</p>
+        
+        <h3>Step 1: 초기화</h3>
+        <div class="code">
+// 기존 인증 상태 정리
+localStorage.clear();
+sessionStorage.clear();
+console.log('✅ Storage cleared');
+        </div>
+        
+        <h3>Step 2: Supabase 클라이언트 테스트</h3>
+        <div class="code">
+// Supabase가 로드되었는지 확인
+if (typeof window.supabase !== 'undefined') {
+  console.log('✅ Supabase client available');
+} else {
+  console.log('❌ Supabase client not found');
+}
+        </div>
+        
+        <h3>Step 3: 직접 인증 테스트</h3>
+        <div class="code">
+// 김광일 계정으로 직접 로그인 시도
+async function testLogin() {
+  try {
+    const response = await fetch('/api/auth/signin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'alex@culinaryseoul.com',
+        password: 'rlarhkdlf3!@'
+      })
+    });
+    
+    console.log('API Response:', response.status, response.statusText);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ Login successful:', data);
+    } else {
+      const error = await response.text();
+      console.log('❌ Login failed:', error);
+    }
+  } catch (error) {
+    console.log('❌ Network error:', error);
+  }
+}
+
+// 함수 실행
+testLogin();
+        </div>
+        
+        <h3>Step 4: React 앱 상태 확인</h3>
+        <div class="code">
+// React DevTools를 사용하여 AuthContext 상태 확인
+// 또는 콘솔에서 현재 사용자 상태 확인
+console.log('Current location:', window.location.href);
+console.log('Current user from localStorage:', localStorage.getItem('sb-user'));
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>3. 예상되는 문제들</h2>
+        <ul>
+            <li><strong>PGRST116 에러</strong>: 사용자 프로필이 데이터베이스에 없음</li>
+            <li><strong>RLS 정책 문제</strong>: Row Level Security가 접근을 차단</li>
+            <li><strong>인증 토큰 문제</strong>: Supabase 토큰이 만료되거나 유효하지 않음</li>
+            <li><strong>네트워크 문제</strong>: API 호출이 실패</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2>4. 실제 테스트 절차</h2>
+        <ol>
+            <li>브라우저에서 <code>http://localhost:5173</code> 접속</li>
+            <li>개발자 도구(F12) 열기</li>
+            <li>Console 탭으로 이동</li>
+            <li>위의 코드들을 순서대로 실행</li>
+            <li>로그인 페이지에서 실제 로그인 시도</li>
+            <li>콘솔에서 나오는 모든 로그 확인</li>
+        </ol>
+    </div>
+    
+    <div class="section">
+        <h2>5. 테스트 계정 정보</h2>
+        <ul>
+            <li><strong>이메일</strong>: alex@culinaryseoul.com</li>
+            <li><strong>비밀번호</strong>: rlarhkdlf3!@</li>
+            <li><strong>역할</strong>: super_admin</li>
+        </ul>
+    </div>
+    
+    <script>
+        console.log('🔍 CulinarySeoul 디버깅 도구가 로드되었습니다.');
+        console.log('개발자 도구를 열고 위의 테스트 코드를 실행해보세요.');
+    </script>
+</body>
+</html>

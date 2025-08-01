@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import { useAuth } from '../../contexts/AuthContext'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
@@ -17,7 +17,23 @@ export function ProtectedRoute({
   const { user, loading, hasRole, hasPermission } = useAuth()
   const location = useLocation()
 
+  // Debug logging on render
+  useEffect(() => {
+    console.log('[ProtectedRoute] Component rendered with:', {
+      pathname: location.pathname,
+      user: user ? { id: user.id, email: user.email, role: user.role } : null,
+      loading,
+      requiredRole,
+      requiredPermission,
+      timestamp: new Date().toISOString()
+    })
+  }, [location.pathname, user, loading, requiredRole, requiredPermission])
+
   if (loading) {
+    console.log('[ProtectedRoute] Loading state, showing spinner', {
+      pathname: location.pathname,
+      timestamp: new Date().toISOString()
+    })
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" />
@@ -26,12 +42,40 @@ export function ProtectedRoute({
   }
 
   if (!user) {
+    // Super admin 특별 처리: 추가 대기 시간 허용
+    const isSuperAdminRoute = location.pathname.startsWith('/company') || location.pathname.startsWith('/brand');
+    const superAdminNoTimeout = import.meta.env.VITE_SUPER_ADMIN_NO_TIMEOUT === 'true';
+    
+    if (isSuperAdminRoute && superAdminNoTimeout && !loading) {
+      console.log('[ProtectedRoute] Super admin route detected, allowing additional loading time');
+      // Super admin 경우 추가 로딩 시간 허용
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <LoadingSpinner size="lg" />
+            <p className="mt-4 text-gray-600">관리자 권한을 확인하고 있습니다...</p>
+          </div>
+        </div>
+      )
+    }
+    
     // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+    console.log('[ProtectedRoute] No user found, redirecting to login', {
+      from: location.pathname,
+      timestamp: new Date().toISOString()
+    })
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
   if (requiredRole && !hasRole(requiredRole as any)) {
     // 필요한 역할이 없는 경우 접근 거부
+    console.log('[ProtectedRoute] Role check failed', {
+      userRole: user.role,
+      requiredRole,
+      hasRole: hasRole(requiredRole as any),
+      pathname: location.pathname,
+      timestamp: new Date().toISOString()
+    })
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -50,6 +94,13 @@ export function ProtectedRoute({
 
   if (requiredPermission && !hasPermission(requiredPermission)) {
     // 필요한 권한이 없는 경우 접근 거부
+    console.log('[ProtectedRoute] Permission check failed', {
+      userPermissions: user.permissions,
+      requiredPermission,
+      hasPermission: hasPermission(requiredPermission),
+      pathname: location.pathname,
+      timestamp: new Date().toISOString()
+    })
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -65,6 +116,14 @@ export function ProtectedRoute({
       </div>
     )
   }
+
+  console.log('[ProtectedRoute] All checks passed, rendering children', {
+    pathname: location.pathname,
+    userRole: user.role,
+    requiredRole,
+    requiredPermission,
+    timestamp: new Date().toISOString()
+  })
 
   return <>{children}</>
 }

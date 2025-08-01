@@ -178,15 +178,25 @@ export function usePermissions(): UsePermissionsReturn {
     loadPermissions();
   }, [loadPermissions]);
 
-  // 세션 만료 체크
+  // 세션 만료 체크 (super admin의 경우 스킵)
   useEffect(() => {
     if (!currentSession?.expiresAt) return;
+
+    // Super admin timeout 비활성화 체크
+    const noTimeoutEnabled = import.meta.env.VITE_SUPER_ADMIN_NO_TIMEOUT === 'true';
+    const isSuperAdmin = user?.role === 'super_admin';
+    
+    if (noTimeoutEnabled && isSuperAdmin) {
+      console.log('[usePermissions] Session timeout disabled for super admin');
+      return;
+    }
 
     const checkExpiration = () => {
       const now = new Date();
       const expiresAt = new Date(currentSession.expiresAt!);
       
       if (now >= expiresAt) {
+        console.log('[usePermissions] Session expired, ending session');
         toast.error('세션이 만료되었습니다. 다시 로그인해주세요.');
         permissionService.endSession(currentSession.id);
         setCurrentSession(null);
@@ -195,7 +205,7 @@ export function usePermissions(): UsePermissionsReturn {
 
     const interval = setInterval(checkExpiration, 60000); // 1분마다 체크
     return () => clearInterval(interval);
-  }, [currentSession]);
+  }, [currentSession, user?.role]);
 
   return {
     permissions,

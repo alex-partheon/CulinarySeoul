@@ -13,7 +13,8 @@
     "test:coverage": "jest --coverage",
     "test:security": "jest src/tests/security/SecurityTestSuite.test.ts",
     "security:scan": "npm audit && npm run test:security",
-    "security:report": "npm run test:coverage && npm audit --audit-level=moderate"
+    "security:report": "npm run test:coverage && npm audit --audit-level=moderate",
+    "create-test-account": "node scripts/create-test-account.js"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",

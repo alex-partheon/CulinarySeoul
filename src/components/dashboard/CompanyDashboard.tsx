@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { CompanyService } from '../../domains/company/companyService';
-import { BrandService } from '../../domains/brand/brandService';
-import { StoreService } from '../../domains/store/storeService';
-import type { Company, Brand, Store } from '../../domains/types';
+import { mockDataService } from '../../services/mockDataService';
+import type { MockCompany, MockBrand, MockStore } from '../../data/mockData';
 import { BusinessCategory } from '../../domains/brand/types';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -15,23 +13,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Plus, Building2, Store, Settings } from 'lucide-react';
 import CategoryManagement from './CategoryManagement';
+import MockDashboardAnalytics from './MockDashboardAnalytics';
 
 interface CompanyDashboardProps {
   companyId: string;
 }
 
 export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId }) => {
-  const [company, setCompany] = useState<Company | null>(null);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [stores, setStores] = useState<Store[]>([]);
+  const [company, setCompany] = useState<MockCompany | null>(null);
+  const [brands, setBrands] = useState<MockBrand[]>([]);
+  const [stores, setStores] = useState<MockStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBrandDialog, setShowBrandDialog] = useState(false);
   const [showStoreDialog, setShowStoreDialog] = useState(false);
   const [selectedBrandId, setSelectedBrandId] = useState<string>('');
-
-  const companyService = new CompanyService();
-  const brandService = new BrandService();
-  const storeService = new StoreService();
 
   // 새 브랜드 폼 상태
   const [newBrand, setNewBrand] = useState({
@@ -70,18 +65,18 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
     try {
       setLoading(true);
       
-      // 회사 정보 로드
-      const companyData = await companyService.getCompanyById(companyId);
+      // Mock 데이터 로드
+      const companyData = await mockDataService.getCompanyById(companyId);
       setCompany(companyData);
 
       // 브랜드 목록 로드
-      const brandsData = await brandService.getBrandsByCompany(companyId);
+      const brandsData = await mockDataService.getBrands(companyId);
       setBrands(brandsData);
 
       // 모든 매장 로드 (회사의 모든 브랜드)
-      const allStores: Store[] = [];
+      const allStores: MockStore[] = [];
       for (const brand of brandsData) {
-        const brandStores = await storeService.getStoresByBrand(brand.id);
+        const brandStores = await mockDataService.getStoresByBrand(brand.id);
         allStores.push(...brandStores);
       }
       setStores(allStores);
@@ -94,7 +89,8 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
 
   const handleCreateBrand = async () => {
     try {
-      await brandService.createBrand({
+      // Mock 데이터에서는 실제 생성하지 않고 알림만 표시
+      console.log('브랜드 생성 (Mock):', {
         company_id: companyId,
         ...newBrand
       });
@@ -198,12 +194,18 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
       </Card>
 
       {/* 관리 탭 */}
-      <Tabs defaultValue="brands" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="analytics" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="analytics">분석 대시보드</TabsTrigger>
           <TabsTrigger value="brands">브랜드 관리</TabsTrigger>
           <TabsTrigger value="stores">매장 관리</TabsTrigger>
           <TabsTrigger value="categories">카테고리 관리</TabsTrigger>
         </TabsList>
+
+        {/* 분석 대시보드 탭 */}
+        <TabsContent value="analytics" className="space-y-4">
+          <MockDashboardAnalytics companyId={companyId} />
+        </TabsContent>
 
         {/* 브랜드 관리 탭 */}
         <TabsContent value="brands" className="space-y-4">

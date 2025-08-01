@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BrandService } from '../../domains/brand/brandService';
-import { StoreService } from '../../domains/store/storeService';
-import type { Brand, Store } from '../../domains/types';
+import { mockDataService } from '../../services/mockDataService';
+import type { MockBrand, MockStore } from '../../data/mockData';
 import { BusinessCategory } from '../../domains/brand/types';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -12,21 +11,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Plus, Store as StoreIcon, Settings, MapPin, Phone, Mail, User } from 'lucide-react';
+import MockDashboardAnalytics from './MockDashboardAnalytics';
 
 interface BrandDashboardProps {
   brandId: string;
 }
 
 export const BrandDashboard: React.FC<BrandDashboardProps> = ({ brandId }) => {
-  const [brand, setBrand] = useState<Brand | null>(null);
-  const [stores, setStores] = useState<Store[]>([]);
+  const [brand, setBrand] = useState<MockBrand | null>(null);
+  const [stores, setStores] = useState<MockStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [showStoreDialog, setShowStoreDialog] = useState(false);
-  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [selectedStore, setSelectedStore] = useState<MockStore | null>(null);
   const [showStoreDetailDialog, setShowStoreDetailDialog] = useState(false);
-
-  const brandService = new BrandService();
-  const storeService = new StoreService();
 
   // 새 매장 폼 상태
   const [newStore, setNewStore] = useState({
@@ -64,12 +61,12 @@ export const BrandDashboard: React.FC<BrandDashboardProps> = ({ brandId }) => {
     try {
       setLoading(true);
       
-      // 브랜드 정보 로드
-      const brandData = await brandService.getBrandById(brandId);
+      // Mock 브랜드 정보 로드
+      const brandData = await mockDataService.getBrandById(brandId);
       setBrand(brandData);
 
-      // 매장 목록 로드
-      const storesData = await storeService.getStoresByBrand(brandId);
+      // Mock 매장 목록 로드
+      const storesData = await mockDataService.getStoresByBrand(brandId);
       setStores(storesData);
     } catch (error) {
       console.error('브랜드 데이터 로드 실패:', error);
@@ -80,7 +77,8 @@ export const BrandDashboard: React.FC<BrandDashboardProps> = ({ brandId }) => {
 
   const handleCreateStore = async () => {
     try {
-      await storeService.createStore({
+      // Mock 데이터에서는 실제 생성하지 않고 알림만 표시
+      console.log('매장 생성 (Mock):', {
         ...newStore,
         brand_id: brandId
       });
@@ -171,8 +169,16 @@ export const BrandDashboard: React.FC<BrandDashboardProps> = ({ brandId }) => {
 
   return (
     <div className="space-y-6">
-      {/* 브랜드 정보 헤더 */}
-      <Card>
+      {/* 대시보드 탭 */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList>
+          <TabsTrigger value="overview">개요</TabsTrigger>
+          <TabsTrigger value="analytics">분석</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="overview" className="space-y-6">
+          {/* 브랜드 정보 헤더 */}
+          <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <StoreIcon className="h-5 w-5" />
@@ -537,9 +543,15 @@ export const BrandDashboard: React.FC<BrandDashboardProps> = ({ brandId }) => {
                 </div>
               )}
             </div>
-          )}
+          )})}>
         </DialogContent>
       </Dialog>
+        </TabsContent>
+        
+        <TabsContent value="analytics">
+           <MockDashboardAnalytics brandId={brandId} />
+         </TabsContent>
+      </Tabs>
     </div>
   );
 };

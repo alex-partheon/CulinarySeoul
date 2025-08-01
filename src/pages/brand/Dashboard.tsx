@@ -1,14 +1,31 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { useAuth } from '../../contexts/AuthContext'
-import { SeparationReadiness } from '../../components/dashboard/brand/SeparationReadiness'
-import { StatsCard } from '../../components/ui/StatsCard'
+import { EnhancedMetricCard } from '@/components/dashboard/shared/EnhancedMetricCard'
+import { AlertsFeed, type Alert } from '@/components/dashboard/shared/AlertsFeed'
+import { RecentChanges, type Change } from '@/components/dashboard/shared/RecentChanges'
+import { SummaryChart } from '@/components/dashboard/shared/SummaryChart'
 import { SalesChart } from '../../components/dashboard/SalesChart'
 import { PopularItems } from '../../components/dashboard/PopularItems'
-import { RecentOrders } from '../../components/dashboard/RecentOrders'
+import { QuickActions } from '@/components/dashboard/QuickActions'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '../../components/ui/skeleton'
-import { Alert, AlertDescription, AlertTitle } from '../../components/ui/alert'
-import { AlertCircle } from 'lucide-react'
+import { Alert as AlertComponent, AlertDescription, AlertTitle } from '../../components/ui/alert'
+import { toast } from 'react-hot-toast'
+import { 
+  AlertCircle, 
+  DollarSign, 
+  ShoppingBag, 
+  Users, 
+  TrendingUp,
+  Store,
+  Plus,
+  BarChart3,
+  Menu,
+  Tag,
+  Calendar,
+  Star
+} from 'lucide-react'
 import { useTheme } from '../../components/theme/BrandThemeProvider'
 
 export function BrandDashboard() {
@@ -16,218 +33,301 @@ export function BrandDashboard() {
   const navigate = useNavigate()
   const { brandId } = useParams<{ brandId: string }>()
   const { brandTheme } = useTheme()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const stats = [
+  // Simulated data - replace with actual API calls
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000)
+  }, [])
+
+  // Mock brand data - replace with actual data from API
+  const brandName = '밀랍' // This should come from API based on brandId
+
+  const metrics = [
     {
-      title: '오늘 매출',
-      value: '₩2,450,000',
-      change: '+15%',
-      changeType: 'increase' as const,
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-        </svg>
-      ),
-      className: 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200'
+      title: '브랜드 매출',
+      value: '₩2.89B',
+      change: { value: 15.6, type: 'increase' as const },
+      subtitle: '전월 대비',
+      icon: DollarSign,
+      iconColor: 'text-green-600',
+      trend: { data: [2.1, 2.3, 2.4, 2.5, 2.6, 2.8, 2.89], color: '#10B981' }
     },
     {
-      title: '오늘 주문',
-      value: '156',
-      change: '+8%',
-      changeType: 'increase' as const,
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-        </svg>
-      ),
-      className: 'bg-gradient-to-br from-green-50 to-green-100 border-green-200'
+      title: '매장 수',
+      value: 15,
+      change: { value: 7.1, type: 'increase' as const },
+      subtitle: '전월 대비 +1개',
+      icon: Store,
+      iconColor: 'text-blue-600',
+      trend: { data: [14, 14, 14, 15, 15, 15, 15] }
     },
     {
-      title: '활성 고객',
-      value: '2,341',
-      change: '+12%',
-      changeType: 'increase' as const,
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      ),
-      className: 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200'
+      title: '주문 수',
+      value: '12,456',
+      change: { value: 8.3, type: 'increase' as const },
+      subtitle: '이번 달 누적',
+      icon: ShoppingBag,
+      iconColor: 'text-purple-600',
+      trend: { data: [10200, 10800, 11200, 11600, 11900, 12200, 12456] }
     },
     {
-      title: '평균 주문 금액',
-      value: '₩15,700',
-      change: '+3%',
-      changeType: 'increase' as const,
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-      ),
-      className: 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200'
+      title: '고객 수',
+      value: '45,231',
+      change: { value: 12.4, type: 'increase' as const },
+      subtitle: '활성 고객',
+      icon: Users,
+      iconColor: 'text-orange-600',
+      trend: { data: [38000, 39500, 41000, 42500, 43800, 44500, 45231] }
     }
   ]
+
+  const alerts: Alert[] = [
+    {
+      id: '1',
+      type: 'warning',
+      title: '재고 부족 경고',
+      message: '성수점 시그니처 라떼 원두 재고가 3일분 남았습니다',
+      timestamp: new Date(Date.now() - 15 * 60000),
+      category: '재고관리',
+      read: false,
+      actionLabel: '발주하기',
+      onAction: () => navigate(`/brand/${brandId}/inventory/orders`)
+    },
+    {
+      id: '2',
+      type: 'success',
+      title: '일일 매출 목표 달성',
+      message: '강남점이 일일 매출 목표를 120% 달성했습니다',
+      timestamp: new Date(Date.now() - 2 * 3600000),
+      category: '매출관리',
+      read: false
+    },
+    {
+      id: '3',
+      type: 'info',
+      title: '신메뉴 출시 알림',
+      message: '다음 주 월요일부터 여름 시즌 메뉴가 출시됩니다',
+      timestamp: new Date(Date.now() - 5 * 3600000),
+      category: '메뉴관리',
+      read: true
+    },
+    {
+      id: '4',
+      type: 'error',
+      title: 'POS 연결 오류',
+      message: '판교점 POS 시스템 연결이 불안정합니다',
+      timestamp: new Date(Date.now() - 30 * 60000),
+      category: '시스템',
+      read: false,
+      actionLabel: '지원 요청',
+      onAction: () => navigate(`/brand/${brandId}/system/support`)
+    }
+  ]
+
+  const recentChanges: Change[] = [
+    {
+      id: '1',
+      type: 'update',
+      category: 'menu',
+      title: '메뉴 가격 조정',
+      description: '아메리카노 가격이 4,500원에서 4,800원으로 조정되었습니다',
+      user: { name: '김점장', role: '강남점 점장' },
+      timestamp: new Date(Date.now() - 20 * 60000),
+      metadata: { before: '₩4,500', after: '₩4,800', location: '전 매장' }
+    },
+    {
+      id: '2',
+      type: 'create',
+      category: 'staff',
+      title: '신규 직원 등록',
+      description: '성수점에 새로운 바리스타가 합류했습니다',
+      user: { name: '이인사', role: 'HR 매니저' },
+      timestamp: new Date(Date.now() - 3 * 3600000),
+      metadata: { location: '성수점' }
+    },
+    {
+      id: '3',
+      type: 'update',
+      category: 'marketing',
+      title: '프로모션 시작',
+      description: '여름 시즌 2+1 프로모션이 시작되었습니다',
+      user: { name: '박마케터', role: '마케팅 팀장' },
+      timestamp: new Date(Date.now() - 6 * 3600000),
+      metadata: { count: 5 }
+    }
+  ]
+
+  const storeChartData = [
+    { name: '강남점', 매출: 450, 주문: 156, 고객: 823 },
+    { name: '성수점', 매출: 380, 주문: 134, 고객: 756 },
+    { name: '판교점', 매출: 320, 주문: 112, 고객: 634 },
+    { name: '홍대점', 매출: 290, 주문: 98, 고객: 567 },
+    { name: '여의도점', 매출: 260, 주문: 87, 고객: 489 },
+    { name: '신촌점', 매출: 240, 주문: 76, 고객: 423 },
+    { name: '잠실점', 매출: 220, 주문: 68, 고객: 387 }
+  ]
+
+  const quickActions = [
+    {
+      title: '새 메뉴 추가',
+      description: '메뉴 등록',
+      icon: Menu,
+      onClick: () => navigate(`/brand/${brandId}/menu/new`),
+      color: 'primary' as const
+    },
+    {
+      title: '프로모션 생성',
+      description: '할인 이벤트',
+      icon: Tag,
+      onClick: () => navigate(`/brand/${brandId}/promotions/new`),
+      color: 'secondary' as const
+    },
+    {
+      title: '재고 발주',
+      description: '물품 주문',
+      icon: Plus,
+      onClick: () => navigate(`/brand/${brandId}/inventory/orders`),
+      color: 'default' as const
+    },
+    {
+      title: '매출 분석',
+      description: '상세 리포트',
+      icon: BarChart3,
+      onClick: () => navigate(`/brand/${brandId}/analytics/sales`),
+      color: 'secondary' as const
+    },
+    {
+      title: '직원 관리',
+      description: '근무 스케줄',
+      icon: Users,
+      onClick: () => navigate(`/brand/${brandId}/staff`),
+      color: 'default' as const
+    },
+    {
+      title: '고객 리뷰',
+      description: '피드백 확인',
+      icon: Star,
+      onClick: () => navigate(`/brand/${brandId}/marketing/reviews`),
+      color: 'primary' as const
+    }
+  ]
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-96 lg:col-span-2" />
+          <Skeleton className="h-96" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
       {/* Error Alert */}
       {error && (
-        <Alert variant="destructive">
+        <AlertComponent variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>오류</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
-        </Alert>
+        </AlertComponent>
       )}
 
-      {/* Loading State */}
-      {loading ? (
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{brandName} 브랜드 대시보드</h1>
+          <p className="text-gray-600 mt-1">브랜드 전체 매장의 통합 현황을 확인하세요</p>
+        </div>
+        <Button onClick={() => navigate(`/brand/${brandId}/analytics`)}>
+          <BarChart3 className="h-4 w-4 mr-2" />
+          상세 분석
+        </Button>
+      </div>
+
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {metrics.map((metric, index) => (
+          <EnhancedMetricCard
+            key={index}
+            {...metric}
+            onClick={() => {
+              toast.success(`${metric.title} 상세 보기`)
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Charts and Alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Store Performance Chart */}
+          <SummaryChart
+            title="매장별 성과"
+            data={storeChartData}
+            type="bar"
+            dataKeys={['매출']}
+            colors={['#F59E0B']}
+            height={300}
+            showLegend={false}
+            summary={{
+              total: '₩2.89B',
+              change: 15.6,
+              changeType: 'increase'
+            }}
+            onPeriodChange={(period) => {
+              toast.success(`기간 변경: ${period}`)
+            }}
+          />
+
+          {/* Sales Chart */}
+          <SalesChart />
+
+          {/* Popular Items */}
+          <PopularItems />
+        </div>
+
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-32" />
-            ))}
-          </div>
-          <Skeleton className="h-96" />
-        </div>
-      ) : (
-        <>
-          {/* Separation Readiness Component */}
-          <SeparationReadiness brandId={brandId || 'default'} />
-        {/* 통계 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => (
-            <StatsCard key={index} {...stat} />
-          ))}
-        </div>
+          {/* Alerts Feed */}
+          <AlertsFeed
+            alerts={alerts}
+            onMarkAsRead={(id) => {
+              toast.success('읽음으로 표시됨')
+            }}
+            onDismiss={(id) => {
+              toast.success('알림 삭제됨')
+            }}
+            onViewAll={() => navigate(`/brand/${brandId}/alerts`)}
+          />
 
-        {/* 메인 콘텐츠 그리드 */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 매출 차트 */}
-          <div className="lg:col-span-2">
-            <SalesChart />
-          </div>
-
-          {/* 인기 메뉴 */}
-          <div>
-            <PopularItems />
-          </div>
+          {/* Recent Changes */}
+          <RecentChanges
+            changes={recentChanges}
+            onViewDetails={(change) => {
+              toast.success(`상세 보기: ${change.title}`)
+            }}
+            onViewAll={() => navigate(`/brand/${brandId}/system/audit-logs`)}
+          />
         </div>
+      </div>
 
-        {/* 하단 그리드 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* 최근 주문 */}
-          <RecentOrders />
-          
-          {/* 마케팅 인사이트 */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">마케팅 인사이트</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-blue-900">소셜 미디어 캠페인</p>
-                  <p className="text-xs text-blue-700">이번 주 도달률 +25%</p>
-                </div>
-                <div className="text-blue-600">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
-                  </svg>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-green-900">고객 만족도</p>
-                  <p className="text-xs text-green-700">평균 4.8/5.0 (이번 달)</p>
-                </div>
-                <div className="text-green-600">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-yellow-900">재방문율</p>
-                  <p className="text-xs text-yellow-700">68% (지난 달 대비 +5%)</p>
-                </div>
-                <div className="text-yellow-600">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </div>
-              </div>
-              
-              {/* 디지털 마케팅 분석 링크 */}
-              <button 
-                onClick={() => navigate(`/brand/${brandId || 'default'}/marketing-analytics`)}
-                className="w-full p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-purple-100 transition-all duration-200 group"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-blue-900 group-hover:text-blue-800">
-                      디지털 마케팅 분석
-                    </p>
-                    <p className="text-xs text-blue-700 group-hover:text-blue-600">
-                      웹사이트 & SNS 통합 성과 분석
-                    </p>
-                  </div>
-                  <div className="text-blue-600 group-hover:text-blue-700 transform group-hover:translate-x-1 transition-all">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 빠른 액션 */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">빠른 액션</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="text-blue-600 mb-2">
-                <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium text-gray-900">새 메뉴</p>
-            </button>
-            
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="text-green-600 mb-2">
-                <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium text-gray-900">프로모션</p>
-            </button>
-            
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="text-purple-600 mb-2">
-                <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium text-gray-900">고객 관리</p>
-            </button>
-            
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="text-orange-600 mb-2">
-                <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium text-gray-900">분석</p>
-            </button>
-          </div>
-        </div>
-        </>
-      )}
+      {/* Quick Actions */}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold mb-4">빠른 작업</h2>
+        <QuickActions
+          actions={quickActions}
+          columns={6}
+          variant="card"
+        />
+      </div>
     </div>
   )
 }

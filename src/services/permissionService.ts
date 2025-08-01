@@ -35,7 +35,8 @@ export class PermissionService {
         // Get current session user to check email
         const { data: { user } } = await supabase.auth.getUser();
         
-        if (user?.email === import.meta.env.VITE_SUPER_ADMIN_EMAIL) {
+        const superAdminEmails = import.meta.env.VITE_SUPER_ADMIN_EMAIL?.split(',').map(email => email.trim()) || [];
+        if (user?.email && superAdminEmails.includes(user.email)) {
           console.log('[PermissionService] Super admin bypass activated for:', user.email);
           const superAdminPermissions: UserPermissions = {
             userId,
@@ -203,7 +204,8 @@ export class PermissionService {
       
       if (superAdminBypass) {
         const { data: { user } } = await supabase.auth.getUser();
-        if (user?.email === import.meta.env.VITE_SUPER_ADMIN_EMAIL) {
+        const superAdminEmails = import.meta.env.VITE_SUPER_ADMIN_EMAIL?.split(',').map(email => email.trim()) || [];
+        if (user?.email && superAdminEmails.includes(user.email)) {
           console.log('[PermissionService] Super admin dashboard access bypass for:', dashboardType);
           return true;
         }
@@ -267,7 +269,8 @@ export class PermissionService {
       
       if (superAdminBypass) {
         const { data: { user } } = await supabase.auth.getUser();
-        if (user?.email === import.meta.env.VITE_SUPER_ADMIN_EMAIL) {
+        const superAdminEmails = import.meta.env.VITE_SUPER_ADMIN_EMAIL?.split(',').map(email => email.trim()) || [];
+        if (user?.email && superAdminEmails.includes(user.email)) {
           console.log('[PermissionService] Super admin session bypass - creating virtual session');
           // Create a virtual session for super admin that doesn't need database storage
           const virtualSession: DashboardSession = {

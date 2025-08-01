@@ -82,18 +82,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
         metadata: supabaseUser.user_metadata
       })
       
-      // Super admin bypass: Check if this is the super admin email
-      const isSuperAdminEmail = supabaseUser.email === import.meta.env.VITE_SUPER_ADMIN_EMAIL;
+      // Super admin bypass: Check if this is one of the super admin emails
+      const superAdminEmails = import.meta.env.VITE_SUPER_ADMIN_EMAIL?.split(',').map(email => email.trim()) || [];
+      const isSuperAdminEmail = supabaseUser.email && superAdminEmails.includes(supabaseUser.email);
       const superAdminBypass = import.meta.env.VITE_SUPER_ADMIN_BYPASS === 'true';
       
       if (isSuperAdminEmail && superAdminBypass) {
         console.log('[AuthContext] Super admin detected, creating bypass user profile')
+        // 이메일별 사용자 정보 설정
+        const userInfo = supabaseUser.email === 'company@test.com' 
+          ? { username: 'company-test', first_name: '테스트', last_name: '관리자' }
+          : { username: 'alex', first_name: '김광일', last_name: '' };
+          
         const superAdminUser: User = {
           id: supabaseUser.id,
           email: supabaseUser.email!,
-          username: 'alex',
-          first_name: '김광일',
-          last_name: '',
+          username: userInfo.username,
+          first_name: userInfo.first_name,
+          last_name: userInfo.last_name,
           role: UserRole.SUPER_ADMIN,
           status: 'active' as any,
           email_verified: true,

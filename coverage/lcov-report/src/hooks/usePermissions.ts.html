@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/94</span>
+                <span class='fraction'>0/100</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/29</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/86</span>
+                <span class='fraction'>0/92</span>
             </div>
         
             
@@ -301,7 +301,17 @@
 <a name='L236'></a><a href='#L236'>236</a>
 <a name='L237'></a><a href='#L237'>237</a>
 <a name='L238'></a><a href='#L238'>238</a>
-<a name='L239'></a><a href='#L239'>239</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -485,10 +495,20 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -719,15 +739,25 @@ export function <span class="fstat-no" title="function not covered" >usePermissi
 <span class="cstat-no" title="statement not covered" >    loadPermissions();</span>
   }, [loadPermissions]);
 &nbsp;
-  // 세션 만료 체크
+  // 세션 만료 체크 (super admin의 경우 스킵)
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!currentSession?.expiresAt) <span class="cstat-no" title="statement not covered" >return;</span></span>
+&nbsp;
+    // Super admin timeout 비활성화 체크
+    const noTimeoutEnabled = <span class="cstat-no" title="statement not covered" >import.meta.env.VITE_SUPER_ADMIN_NO_TIMEOUT === 'true';</span>
+    const isSuperAdmin = <span class="cstat-no" title="statement not covered" >user?.role === 'super_admin';</span>
+    
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (noTimeoutEnabled &amp;&amp; isSuperAdmin) {</span>
+<span class="cstat-no" title="statement not covered" >      console.log('[usePermissions] Session timeout disabled for super admin');</span>
+<span class="cstat-no" title="statement not covered" >      return;</span>
+    }
 &nbsp;
     const checkExpiration = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
       const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
       const expiresAt = <span class="cstat-no" title="statement not covered" >new Date(currentSession.expiresAt!);</span>
       
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (now &gt;= expiresAt) {</span>
+<span class="cstat-no" title="statement not covered" >        console.log('[usePermissions] Session expired, ending session');</span>
 <span class="cstat-no" title="statement not covered" >        toast.error('세션이 만료되었습니다. 다시 로그인해주세요.');</span>
 <span class="cstat-no" title="statement not covered" >        permissionService.endSession(currentSession.id);</span>
 <span class="cstat-no" title="statement not covered" >        setCurrentSession(null);</span>
@@ -736,7 +766,7 @@ export function <span class="fstat-no" title="function not covered" >usePermissi
 &nbsp;
     const interval = <span class="cstat-no" title="statement not covered" >setInterval(checkExpiration, 60000);</span> // 1분마다 체크
 <span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >clearInterval(interval);</span></span>
-  }, [currentSession]);
+  }, [currentSession, user?.role]);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
     permissions,
@@ -784,7 +814,7 @@ export function <span class="fstat-no" title="function not covered" >useDashboar
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-31T09:16:33.352Z
+                at 2025-08-04T04:56:51.137Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -43,10 +43,10 @@ export function DashboardRedirect() {
       try {
         // 로그인되지 않은 경우
         if (!user) {
-          console.log('[DashboardRedirect] No user, redirecting to login', {
+          console.log('[DashboardRedirect] No user, redirecting to sign-in', {
             timestamp: new Date().toISOString()
           });
-          navigate('/login', { replace: true });
+          navigate('/sign-in', { replace: true });
           return;
         }
 
@@ -127,7 +127,7 @@ export function DashboardRedirect() {
           <h1 className="text-2xl font-bold text-gray-900 mb-4">접근 권한이 없습니다</h1>
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/sign-in')}
             className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
             로그인 페이지로 이동

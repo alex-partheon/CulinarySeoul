@@ -12,14 +12,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Plus, Building2, Store, Settings } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import CategoryManagement from './CategoryManagement';
 import MockDashboardAnalytics from './MockDashboardAnalytics';
 
+
+
 interface CompanyDashboardProps {
   companyId: string;
+  onDataUpdate?: () => void;
 }
 
-export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId }) => {
+export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId, onDataUpdate }) => {
   const [company, setCompany] = useState<MockCompany | null>(null);
   const [brands, setBrands] = useState<MockBrand[]>([]);
   const [stores, setStores] = useState<MockStore[]>([]);
@@ -92,7 +96,8 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
       // Mock 데이터에서는 실제 생성하지 않고 알림만 표시
       console.log('브랜드 생성 (Mock):', {
         company_id: companyId,
-        ...newBrand
+        ...newBrand,
+        business_category: newBrand.business_category as BusinessCategory
       });
       
       setShowBrandDialog(false);
@@ -112,7 +117,8 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
 
   const handleCreateStore = async () => {
     try {
-      await storeService.createStore({
+      // Mock 데이터에서는 실제 생성하지 않고 알림만 표시
+      console.log('매장 생성 (Mock):', {
         ...newStore,
         brand_id: selectedBrandId
       });
@@ -143,8 +149,8 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
     }
   };
 
-  const getCategoryLabel = (category: BusinessCategory): string => {
-    const labels = {
+  const getCategoryLabel = (category: BusinessCategory | string): string => {
+    const labels: Record<BusinessCategory, string> = {
       [BusinessCategory.CAFE]: '카페',
       [BusinessCategory.RESTAURANT]: '레스토랑',
       [BusinessCategory.BAKERY]: '베이커리',
@@ -156,7 +162,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
       [BusinessCategory.CATERING]: '케이터링',
       [BusinessCategory.OTHER]: '기타'
     };
-    return labels[category] || category;
+    return labels[category as BusinessCategory] || String(category);
   };
 
   if (loading) {
@@ -165,41 +171,53 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
 
   return (
     <div className="space-y-6">
-      {/* 회사 정보 헤더 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
-            {company?.name} 관리 대시보드
+      {/* Enhanced Company Header */}
+      <Card className="border-border/50 shadow-lg">
+        <CardHeader className="space-y-4">
+          <CardTitle className="flex items-center gap-3 text-2xl font-bold">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10">
+              <Building2 className="h-6 w-6 text-blue-600" />
+            </div>
+            <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+              {company?.name} 관리 대시보드
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{brands.length}</div>
-              <div className="text-sm text-gray-600">브랜드</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/50">
+              <div className="text-3xl font-bold text-blue-600 mb-1">{brands.length}</div>
+              <div className="text-sm font-medium text-blue-700">브랜드</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{stores.length}</div>
-              <div className="text-sm text-gray-600">매장</div>
+            <div className="text-center p-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/50">
+              <div className="text-3xl font-bold text-green-600 mb-1">{stores.length}</div>
+              <div className="text-sm font-medium text-green-700">매장</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
+            <div className="text-center p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100/50 border border-purple-200/50">
+              <div className="text-3xl font-bold text-purple-600 mb-1">
                 {stores.filter(s => s.is_active).length}
               </div>
-              <div className="text-sm text-gray-600">활성 매장</div>
+              <div className="text-sm font-medium text-purple-700">활성 매장</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* 관리 탭 */}
+      {/* Enhanced Management Tabs */}
       <Tabs defaultValue="analytics" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="analytics">분석 대시보드</TabsTrigger>
-          <TabsTrigger value="brands">브랜드 관리</TabsTrigger>
-          <TabsTrigger value="stores">매장 관리</TabsTrigger>
-          <TabsTrigger value="categories">카테고리 관리</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 rounded-xl bg-muted/30 p-1">
+          <TabsTrigger value="analytics" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-md transition-all duration-200 font-semibold">
+            분석 대시보드
+          </TabsTrigger>
+          <TabsTrigger value="brands" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-md transition-all duration-200 font-semibold">
+            브랜드 관리
+          </TabsTrigger>
+          <TabsTrigger value="stores" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-md transition-all duration-200 font-semibold">
+            매장 관리
+          </TabsTrigger>
+          <TabsTrigger value="categories" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-md transition-all duration-200 font-semibold">
+            카테고리 관리
+          </TabsTrigger>
         </TabsList>
 
         {/* 분석 대시보드 탭 */}
@@ -262,8 +280,8 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
                       <SelectContent>
                         {Object.values(BusinessCategory).map((category) => (
                           <SelectItem key={category} value={category}>
-                            {getCategoryLabel(category)}
-                          </SelectItem>
+                        {getCategoryLabel(category)}
+                      </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -285,37 +303,51 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
             </Dialog>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {brands.map((brand) => {
               const brandStores = stores.filter(s => s.brand_id === brand.id);
               return (
-                <Card key={brand.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{brand.name}</span>
-                      <Badge variant={brand.is_active ? "default" : "secondary"}>
+                <Card key={brand.id} className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/20">
+                  <CardHeader className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-bold text-foreground">{brand.name}</CardTitle>
+                      <Badge 
+                        variant={brand.is_active ? "default" : "secondary"}
+                        className={cn(
+                          "font-medium",
+                          brand.is_active && "bg-gradient-to-r from-green-500 to-green-600 text-white"
+                        )}
+                      >
                         {brand.is_active ? '활성' : '비활성'}
                       </Badge>
-                    </CardTitle>
+                    </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-3">
                     <div className="space-y-2">
-                      <div className="text-sm">
-                        <span className="font-medium">코드:</span> {brand.code}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground font-medium">코드:</span>
+                        <span className="font-mono text-xs bg-muted px-2 py-1 rounded">{brand.code}</span>
                       </div>
-                      <div className="text-sm">
-                        <span className="font-medium">도메인:</span> {brand.domain}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground font-medium">도메인:</span>
+                        <span className="text-xs text-primary">{brand.domain}</span>
                       </div>
-                      <div className="text-sm">
-                        <span className="font-medium">업종:</span> {getCategoryLabel(brand.business_category)}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground font-medium">업종:</span>
+                        <Badge variant="outline" className="text-xs">
+                          {getCategoryLabel(brand.business_category)}
+                        </Badge>
                       </div>
                       {brand.description && (
-                        <div className="text-sm">
-                          <span className="font-medium">설명:</span> {brand.description}
+                        <div className="text-sm text-muted-foreground leading-relaxed">
+                          {brand.description}
                         </div>
                       )}
-                      <div className="text-sm">
-                        <span className="font-medium">매장 수:</span> {brandStores.length}개
+                      <div className="flex justify-between items-center text-sm pt-2 border-t border-border/50">
+                        <span className="text-muted-foreground font-medium">매장 수:</span>
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                          {brandStores.length}개
+                        </Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -467,37 +499,56 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
             </Dialog>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {stores.map((store) => {
               const brand = brands.find(b => b.id === store.brand_id);
               return (
-                <Card key={store.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{store.name}</span>
-                      <Badge variant={store.is_active ? "default" : "secondary"}>
+                <Card key={store.id} className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/20">
+                  <CardHeader className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-bold text-foreground">{store.name}</CardTitle>
+                      <Badge 
+                        variant={store.is_active ? "default" : "secondary"}
+                        className={cn(
+                          "font-medium",
+                          store.is_active && "bg-gradient-to-r from-green-500 to-green-600 text-white"
+                        )}
+                      >
                         {store.is_active ? '활성' : '비활성'}
                       </Badge>
-                    </CardTitle>
+                    </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-3">
                     <div className="space-y-2">
-                      <div className="text-sm">
-                        <span className="font-medium">브랜드:</span> {brand?.name}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground font-medium">브랜드:</span>
+                        <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                          {brand?.name}
+                        </Badge>
                       </div>
-                      <div className="text-sm">
-                        <span className="font-medium">코드:</span> {store.code}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground font-medium">코드:</span>
+                        <span className="font-mono text-xs bg-muted px-2 py-1 rounded">{store.code}</span>
                       </div>
                       {store.description && (
-                        <div className="text-sm">
-                          <span className="font-medium">설명:</span> {store.description}
+                        <div className="text-sm text-muted-foreground leading-relaxed">
+                          {store.description}
                         </div>
                       )}
                       {store.address && (
-                        <div className="text-sm">
-                          <span className="font-medium">주소:</span> 
-                          <div className="text-xs text-gray-600 mt-1">
-                            {store.address.street}, {store.address.district}, {store.address.city}
+                        <div className="space-y-1">
+                          <span className="text-muted-foreground font-medium text-sm">주소:</span>
+                          <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded-lg">
+                            {typeof store.address === 'string' ? (
+                              <div>{store.address}</div>
+                            ) : store.address && typeof store.address === 'object' ? (
+                              <>
+                                <div>{(store.address as any).street || ''}</div>
+                                <div>{(store.address as any).district || ''}, {(store.address as any).city || ''}</div>
+                              </>
+                            ) : (
+                              <div>주소 정보 없음</div>
+                            )}
                           </div>
                         </div>
                       )}
@@ -511,7 +562,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ companyId })
 
         {/* 카테고리 관리 탭 */}
          <TabsContent value="categories">
-           <CategoryManagement brands={brands} onDataUpdate={onDataUpdate} />
+           <CategoryManagement brands={brands} onDataUpdate={onDataUpdate || (() => {})} />
          </TabsContent>
       </Tabs>
     </div>

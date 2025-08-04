@@ -44,6 +44,9 @@ npm run test:security     # Run security-specific tests (SecurityTestSuite.test.
 # Security
 npm run security:scan     # Run npm audit + security tests
 npm run security:report   # Generate coverage + audit report
+
+# Utilities
+npm run create-test-account # Create test accounts for development
 ```
 
 ## Architecture & Technology Stack
@@ -59,6 +62,7 @@ npm run security:report   # Generate coverage + audit report
 
 ### Key Dependencies
 - `@supabase/supabase-js` - Database and auth client
+- `@clerk/clerk-react` - Authentication and user management (primary auth system)
 - `@radix-ui/*` - Accessible UI primitives (avatar, dialog, dropdown-menu, etc.)
 - `react-router` v7.7.1 - Routing system (no separate react-router-dom)
 - `react-hot-toast` - Toast notifications
@@ -66,6 +70,7 @@ npm run security:report   # Generate coverage + audit report
 - `class-variance-authority` - Component variants
 - `tailwind-merge` - Tailwind class merging
 - `recharts` - Chart components for analytics
+- `@tanstack/react-query` - Server state management and caching
 
 ### Vite Configuration
 - Path alias configured: `@/` → `./src/`
@@ -75,8 +80,9 @@ npm run security:report   # Generate coverage + audit report
 ## Authentication & Permissions
 
 ### Authentication System
-- **Supabase Auth** with email/password
-- **AuthContext** for global auth state
+- **Clerk Auth** as primary authentication system (email/password, social login)
+- **Supabase** for database operations and additional services
+- **AuthContext** and **ClerkAuthContext** for global auth state
 - **Hybrid Permission System** supporting both company and brand access
 - **Protected Routes** with role-based access
 
@@ -99,9 +105,10 @@ Each domain follows a consistent pattern:
 2. **Brand**: Brand-specific operations (밀랍 etc.)
 3. **Store**: Individual store management (성수점 etc.)
 4. **User**: User and permission management
-5. **Inventory**: Stock and product management with FIFO engine
-6. **Order**: Order processing and fulfillment
-7. **Payments**: Payment integration (Toss Payments)
+5. **Inventory**: Stock and product management with FIFO engine (89.89% test coverage)
+6. **Analytics**: Business analytics including profitability analysis
+7. **Order**: Order processing and fulfillment
+8. **Payments**: Payment integration (Toss Payments)
 
 ## Routing System
 
@@ -121,7 +128,10 @@ Each domain follows a consistent pattern:
 - ✅ **TASK-001**: Basic architecture and dual dashboard routing
 - ✅ **TASK-002**: Hybrid permission system implementation  
 - ✅ **TASK-003**: Company-brand-store data model implementation
-- 🚧 **TASK-004**: Company dashboard UI implementation (in progress)
+- ✅ **TASK-004**: Company dashboard UI implementation (completed)
+- ✅ **TASK-006**: FIFO 재고 관리 시스템 구현 (89.89% test coverage achieved)
+- 🚧 **TASK-008**: 매출관리 시스템 (UI scaffolding completed, implementation pending)
+- ✅ **TASK-009**: 실시간 재고 현황 대시보드 구현 (mostly completed)
 
 ### Task Processing Rules
 1. Read current tasks from `docs/TASK.md`
@@ -172,6 +182,51 @@ If you see "Right side of assignment cannot be destructured" errors:
 - CSS variables defined with `@theme` directive
 - Simplified config file (no theme extend needed)
 
+### Test Environment
+- Jest configured with TypeScript and ESM support
+- `ts-jest` preset with `useESM: true`
+- Path alias `@/` mapped to `src/` directory
+- Security-critical files have higher coverage thresholds (90%+)
+- Use `npm run test:security` for permission-related tests
+
+### Clerk Authentication
+- Primary authentication system using `@clerk/clerk-react`
+- Development setup requires Clerk publishable key in environment
+- Webhook endpoints for user management in `/src/api/clerk-webhooks.ts`
+- User onboarding flow in `/src/pages/auth/ClerkOnboarding.tsx`
+
+## Important Implementation Details
+
+### Current Architecture Status
+- **FIFO Inventory Engine**: Fully implemented with comprehensive test suite (19 tests, 89.89% coverage)
+- **Profitability Analytics**: Advanced analytics system with cost optimization features
+- **Brand Digital Marketing**: Google Analytics and Instagram API integration framework
+- **Comprehensive UI Components**: Extensive Radix UI-based component library
+- **Real-time Features**: Supabase real-time subscriptions for inventory updates
+
+### Key Architectural Patterns
+- **Domain-Driven Design**: Clear separation of business domains in `/src/domains/`
+- **Component-Driven UI**: Reusable components in `/src/components/ui/`
+- **Service Layer Pattern**: Business logic encapsulated in service classes
+- **Context Providers**: React contexts for auth, theme, and data scope
+- **Hook-Based State**: Custom hooks for complex state management
+
+### Testing Architecture
+- **Unit Tests**: Domain logic and utility functions
+- **Integration Tests**: Service interactions and data flow
+- **Security Tests**: Permission system and auth flows (SecurityTestSuite)
+- **Advanced Scenarios**: Complex business logic edge cases
+- **Coverage Thresholds**: Higher requirements for security-critical code
+
+### File Organization
+- `/src/components/` - UI components organized by domain
+- `/src/domains/` - Business logic and data models
+- `/src/pages/` - Route components with nested structure
+- `/src/contexts/` - React context providers
+- `/src/hooks/` - Custom React hooks
+- `/src/services/` - Shared service layer
+- `/src/tests/` - Test files mirroring domain structure
+
 ## Security Considerations
 
 - **RLS Policies**: Database-level security for data isolation
@@ -179,6 +234,7 @@ If you see "Right side of assignment cannot be destructured" errors:
 - **Session Management**: Secure session handling with expiration
 - **Audit Logging**: Track permission changes and access
 - **Input Validation**: Validate all user inputs and API calls
+- **Clerk Integration**: Enterprise-grade authentication with webhook support
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.

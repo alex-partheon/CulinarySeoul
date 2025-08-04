@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router'
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth as useSupabaseAuth } from '../../contexts/AuthContext'
+import { useClerkAuth } from '../../contexts/ClerkAuthContext'
+import { useAuth as useClerkAuthHook } from '@clerk/clerk-react'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 import { supabase } from '../../lib/supabase'
 
@@ -15,9 +17,25 @@ export function ProtectedRoute({
   requiredRole, 
   requiredPermission 
 }: ProtectedRouteProps) {
-  const { user, loading, hasRole, hasPermission } = useAuth()
   const location = useLocation()
   const [superAdminBypass, setSuperAdminBypass] = useState<boolean | null>(null)
+  
+  // Clerk 사용 여부 확인
+  const useClerk = import.meta.env.VITE_USE_CLERK_AUTH === 'true'
+  
+  // Clerk 인증 훅
+  const { isSignedIn: clerkIsSignedIn, isLoaded: clerkIsLoaded } = useClerkAuthHook()
+  const clerkAuth = useClerk ? useClerkAuth() : null
+  
+  // Supabase 인증 훅 (fallback)
+  const supabaseAuth = !useClerk ? useSupabaseAuth() : null
+  
+  // 현재 사용 중인 인증 시스템에서 값 가져오기
+  const user = useClerk ? clerkAuth?.user : supabaseAuth?.user
+  const loading = useClerk ? !clerkIsLoaded : supabaseAuth?.loading
+  const isSignedIn = useClerk ? clerkIsSignedIn : !!supabaseAuth?.user
+  const hasRole = useClerk ? clerkAuth?.hasRole : supabaseAuth?.hasRole
+  const hasPermission = useClerk ? clerkAuth?.hasPermission : supabaseAuth?.hasPermission
 
   // Check for super admin bypass on component mount
   useEffect(() => {
@@ -25,15 +43,15 @@ export function ProtectedRoute({
       const bypass = import.meta.env.VITE_SUPER_ADMIN_BYPASS === 'true';
       const superAdminEmail = import.meta.env.VITE_SUPER_ADMIN_EMAIL;
       
-      if (bypass && superAdminEmail) {
+      if (bypass && superAdminEmail && user?.email) {
         try {
-          const { data: { user: authUser } } = await supabase.auth.getUser();
-          const isSuperAdmin = authUser?.email === superAdminEmail;
+          const isSuperAdmin = user.email === superAdminEmail;
           console.log('[ProtectedRoute] Super admin bypass check:', {
-            authUser: authUser?.email,
+            userEmail: user.email,
             superAdminEmail,
             isSuperAdmin,
-            bypass
+            bypass,
+            authSystem: useClerk ? 'Clerk' : 'Supabase'
           });
           setSuperAdminBypass(isSuperAdmin);
         } catch (error) {
@@ -46,7 +64,7 @@ export function ProtectedRoute({
     };
     
     checkSuperAdminBypass();
-  }, []);
+  }, [user, useClerk]);
 
   // Debug logging on render
   useEffect(() => {
@@ -86,13 +104,15 @@ export function ProtectedRoute({
     )
   }
 
-  if (!user) {
+  if (!isSignedIn) {
     // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
     console.log('[ProtectedRoute] No user found, redirecting to login', {
       from: location.pathname,
+      authSystem: useClerk ? 'Clerk' : 'Supabase',
       timestamp: new Date().toISOString()
     })
-    return <Navigate to="/login" state={{ from: location }} replace />
+    const loginPath = useClerk ? '/sign-in' : '/login'
+    return <Navigate to={loginPath} state={{ from: location }} replace />
   }
 
   if (requiredRole && !hasRole(requiredRole as any)) {

@@ -31,13 +31,13 @@ export interface Brand {
 
 export interface CreateBrandRequest {
   company_id: string;
-  name?: string;
-  code?: string;
-  domain?: string;
+  name: string;
+  code: string;
+  domain: string;
   business_category: BusinessCategory;
   description?: string;
-  brand_settings?: BrandSettings;
-  separation_readiness?: SeparationReadiness;
+  brand_settings?: Record<string, any>;
+  separation_readiness?: Record<string, any>;
   is_active?: boolean;
 }
 

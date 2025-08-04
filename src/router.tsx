@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, useParams } from 'react-router'
+import { createBrowserRouter, RouterProvider, useParams, Navigate } from 'react-router'
 import { RootLayout } from './components/layouts/RootLayout'
 import { CompanyDashboard } from './pages/company/Dashboard'
 import { BrandDashboard } from './pages/brand/Dashboard'
@@ -12,6 +12,13 @@ import { DashboardRedirect } from './components/auth/DashboardRedirect'
 import { AuthProvider } from './contexts/AuthContext'
 import { DataScopeProvider } from './contexts/DataScopeContext'
 import ShadcnTest from './pages/ShadcnTest'
+import HomePage from './pages/Home'
+
+// Clerk 인증 페이지들
+import ClerkSignInPage from './pages/auth/ClerkSignIn'
+import ClerkSignUpPage from './pages/auth/ClerkSignUp'
+import ClerkProfilePage from './pages/auth/ClerkProfile'
+import ClerkOnboardingPage from './pages/auth/ClerkOnboarding'
 
 // 회사 관리 라우트
 const companyRoutes = {
@@ -242,7 +249,25 @@ const companyRoutes = {
       lazy: () => import('./pages/company/Settings').then(m => ({ Component: m.default }))
     }
   ]
-}
+};
+
+// 관리자 라우트
+const adminRoutes = {
+  path: '/admin',
+  element: (
+    <ProtectedRoute>
+      <DataScopeProvider defaultScope="company">
+        <CompanyDashboardLayout />
+      </DataScopeProvider>
+    </ProtectedRoute>
+  ),
+  children: [
+    {
+      path: 'brand-approvals',
+      lazy: () => import('./pages/admin/BrandApprovals').then(m => ({ Component: m.default }))
+    }
+  ]
+};
 
 // 브랜드 라우트 래퍼 컴포넌트
 const BrandRouteWrapper = () => {
@@ -687,11 +712,36 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <ProtectedRoute><DashboardRedirect /></ProtectedRoute>
+        element: <HomePage />
       },
       {
         path: 'login',
         element: <LoginPage />
+      },
+      // Clerk 인증 라우트
+      {
+        path: 'signin',
+        element: <Navigate to="/sign-in" replace />
+      },
+      {
+        path: 'sign-in',
+        element: <ClerkSignInPage />
+      },
+      {
+        path: 'signup',
+        element: <Navigate to="/sign-up" replace />
+      },
+      {
+        path: 'sign-up',
+        element: <ClerkSignUpPage />
+      },
+      {
+        path: 'profile',
+        element: <ClerkProfilePage />
+      },
+      {
+        path: 'onboarding',
+        element: <ClerkOnboardingPage />
       },
       {
         path: 'shadcn-test',
@@ -708,6 +758,7 @@ export const router = createBrowserRouter([
       companyRoutes,
       brandRoutes,
       storeRoutes,
+      adminRoutes,
       {
         path: '*',
         element: <NotFoundPage />

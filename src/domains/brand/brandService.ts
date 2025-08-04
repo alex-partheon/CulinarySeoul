@@ -2,6 +2,7 @@
 
 import { supabase } from '../../lib/supabase';
 import type { Brand, CreateBrandRequest, UpdateBrandRequest, BusinessCategory } from './types';
+import { BrandInsert } from '../../lib/supabase/types';
 
 export class BrandService {
   /**
@@ -118,25 +119,114 @@ export class BrandService {
   /**
    * 새 브랜드 생성
    */
+  /**
+   * 입력 데이터 검증
+   */
+  private static validateCreateBrandRequest(request: CreateBrandRequest): void {
+    // 회사 ID 검증
+    if (!request.company_id || request.company_id.trim() === '') {
+      throw new Error('회사 ID는 필수입니다');
+    }
+
+    // 필수 필드 검증
+    if (!request.name || request.name.trim() === '') {
+      throw new Error('브랜드 이름은 필수입니다');
+    }
+
+    if (!request.code || request.code.trim() === '') {
+      throw new Error('브랜드 코드는 필수입니다');
+    }
+
+    if (!request.domain || request.domain.trim() === '') {
+      throw new Error('도메인은 필수입니다');
+    }
+
+    if (!request.business_category || request.business_category.trim() === '') {
+      throw new Error('업종 카테고리는 필수입니다');
+    }
+
+    // 브랜드 이름 길이 검증
+    if (request.name.trim().length > 100) {
+      throw new Error('브랜드 이름은 100자 이하여야 합니다');
+    }
+
+    // 브랜드 코드 길이 검증
+    const trimmedCode = request.code.trim().toUpperCase();
+    if (trimmedCode.length < 2 || trimmedCode.length > 10) {
+      throw new Error('브랜드 코드는 2-10자 사이여야 합니다');
+    }
+
+    // 브랜드 코드 형식 검증 (대문자와 숫자만 허용)
+    const codePattern = /^[A-Z0-9]+$/;
+    if (!codePattern.test(trimmedCode)) {
+      throw new Error('브랜드 코드는 대문자와 숫자만 사용 가능합니다');
+    }
+
+    // 도메인 형식 검증 (더 엄격한 검증)
+    const trimmedDomain = request.domain.trim().toLowerCase();
+    const domainPattern = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+    if (!domainPattern.test(trimmedDomain) || 
+        trimmedDomain.includes('..') || 
+        trimmedDomain.startsWith('.') || 
+        trimmedDomain.endsWith('.') ||
+        trimmedDomain.includes(' ') ||
+        trimmedDomain.startsWith('http://') ||
+        trimmedDomain.startsWith('https://')) {
+      throw new Error('올바른 도메인 형식을 입력해주세요');
+    }
+
+    // 설명 길이 검증
+    if (request.description && request.description.trim().length > 500) {
+      throw new Error('설명은 500자 이하여야 합니다');
+    }
+
+    // 유효한 비즈니스 카테고리 검증
+    const validCategories = [
+      'restaurant', 'cafe', 'bakery', 'fast_food', 'fine_dining',
+      'bar', 'dessert', 'food_truck', 'catering', 'other'
+    ];
+    if (!validCategories.includes(request.business_category)) {
+      throw new Error('유효하지 않은 업종 카테고리입니다');
+    }
+  }
+
   static async createBrand(request: CreateBrandRequest): Promise<Brand> {
+    // 입력 데이터 검증
+    this.validateCreateBrandRequest(request);
+
+    const brandData: BrandInsert = {
+      company_id: request.company_id,
+      name: request.name.trim(),
+      code: request.code.trim().toUpperCase(),
+      domain: request.domain.trim().toLowerCase(),
+      business_category: request.business_category,
+      description: request.description?.trim() || null,
+      brand_settings: request.brand_settings || {},
+      separation_readiness: request.separation_readiness || {},
+      is_active: request.is_active ?? true,
+    };
+
     const { data, error } = await supabase
       .from('brands')
-      .insert({
-        company_id: request.company_id,
-        name: request.name || '밀랍',
-        code: request.code || 'millab',
-        domain: request.domain || 'cafe-millab.com',
-        business_category: request.business_category,
-        description: request.description,
-        brand_settings: request.brand_settings || {},
-        separation_readiness: request.separation_readiness || {},
-        is_active: request.is_active ?? true,
-      })
+      .insert(brandData)
       .select()
       .single();
 
     if (error) {
-      throw new Error(`Failed to create brand: ${error.message}`);
+      // 중복 키 오류 처리
+      if (error.code === '23505') {
+        if (error.message.includes('brands_code_key')) {
+          throw new Error('이미 존재하는 브랜드 코드입니다');
+        }
+        if (error.message.includes('brands_domain_key')) {
+          throw new Error('이미 존재하는 도메인입니다');
+        }
+      }
+      // 네트워크 오류나 서버 오류에 대한 더 명확한 메시지
+      if (error.message.includes('fetch') || error.message.includes('network')) {
+        throw new Error('네트워크 연결에 실패했습니다');
+      }
+      throw new Error(`브랜드 생성 중 오류가 발생했습니다: ${error.message}`);
     }
 
     return {

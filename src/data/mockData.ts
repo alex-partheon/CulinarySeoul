@@ -12,6 +12,7 @@ export interface MockBrand {
   id: string;
   company_id: string;
   name: string;
+  english_name?: string;
   category: string;
   description: string;
   logo_url?: string;
@@ -198,6 +199,52 @@ export const mockBrands: MockBrand[] = [
     is_active: true,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
+  },
+  // 승인 대기 중인 브랜드들
+  {
+    id: 'brand-4',
+    company_id: 'comp-1',
+    name: '피자서울',
+    category: 'Italian Restaurant',
+    description: '정통 이탈리아 피자를 제공하는 레스토랑',
+    logo_url: '/logos/pizza-seoul.png',
+    website_url: 'https://pizzaseoul.co.kr',
+    code: 'PIZZA_SEOUL',
+    domain: 'pizzaseoul.co.kr',
+    business_category: 'restaurant',
+    is_active: false,
+    created_at: '2024-12-20T10:30:00Z',
+    updated_at: '2024-12-20T10:30:00Z'
+  },
+  {
+    id: 'brand-5',
+    company_id: 'comp-1',
+    name: '스시마스터',
+    category: 'Japanese Restaurant',
+    description: '신선한 스시와 사케를 제공하는 일식 레스토랑',
+    logo_url: '/logos/sushi-master.png',
+    website_url: 'https://sushimaster.co.kr',
+    code: 'SUSHI_MASTER',
+    domain: 'sushimaster.co.kr',
+    business_category: 'restaurant',
+    is_active: false,
+    created_at: '2024-12-19T15:45:00Z',
+    updated_at: '2024-12-19T15:45:00Z'
+  },
+  {
+    id: 'brand-6',
+    company_id: 'comp-1',
+    name: '베이커리365',
+    category: 'Bakery',
+    description: '매일 신선한 빵과 케이크를 제공하는 베이커리',
+    logo_url: '/logos/bakery365.png',
+    website_url: 'https://bakery365.co.kr',
+    code: 'BAKERY_365',
+    domain: 'bakery365.co.kr',
+    business_category: 'bakery',
+    is_active: false,
+    created_at: '2024-12-18T09:20:00Z',
+    updated_at: '2024-12-18T09:20:00Z'
   }
 ];
 

@@ -39,7 +39,21 @@ import {
   UserCog,
   Shield,
   Sliders,
-  ScrollText
+  ScrollText,
+  Sparkles,
+  BarChart2,
+  TrendingDown,
+  Users2,
+  Building,
+  MapPin,
+  CalendarDays,
+  FileText as FileTextIcon,
+  Bell,
+  Settings2,
+  Zap,
+  TrendingUpIcon,
+  PieChart,
+  ActivityIcon
 } from 'lucide-react'
 
 interface CompanyDashboardLayoutProps {
@@ -95,90 +109,98 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
   const breadcrumbs = generateBreadcrumbs(location.pathname, 'company')
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Enhanced Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 flex flex-col bg-sidebar border-r transition-all duration-300 shadow-lg",
-        sidebarCollapsed ? "w-[70px]" : "w-72",
+        "fixed inset-y-0 left-0 z-50 flex flex-col bg-card/95 backdrop-blur-sm border-r transition-all duration-300 shadow-xl",
+        sidebarCollapsed ? "w-[70px]" : "w-80",
         !sidebarOpen && "hidden lg:flex"
       )}
       aria-label="사이드바 네비게이션">
-        {/* Sidebar Header with Company Logo */}
-        <div className="flex h-16 items-center justify-between px-4 bg-gradient-to-r from-primary/10 to-transparent border-b">
-          {!sidebarCollapsed && (
-            <Link to="/" className="flex items-center gap-3 group" aria-label="홈으로 이동">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-primary/60 flex items-center justify-center text-white font-bold shadow-md group-hover:shadow-lg transition-all duration-200">
-                CS
+        {/* Sidebar Header with Enhanced Branding */}
+        <div className="flex h-20 items-center justify-between px-6 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent border-b border-border/50">
+          {!sidebarCollapsed ? (
+            <Link to="/" className="flex items-center gap-4 group" aria-label="홈으로 이동">
+              <div className="relative">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary via-primary/80 to-primary/60 flex items-center justify-center text-white font-bold shadow-lg group-hover:shadow-xl transition-all duration-300">
+                  CS
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                   CulinarySeoul
                 </span>
-                <span className="text-xs text-muted-foreground">회사 관리 시스템</span>
+                <span className="text-xs text-muted-foreground font-medium">통합 관리 시스템</span>
               </div>
             </Link>
+          ) : (
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary via-primary/80 to-primary/60 flex items-center justify-center text-white font-bold shadow-lg mx-auto">
+              CS
+            </div>
           )}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className={cn(
-              "hidden lg:flex rounded-lg hover:bg-primary/10 transition-all duration-200",
+              "hidden lg:flex rounded-xl hover:bg-primary/10 transition-all duration-200 hover:scale-110",
               sidebarCollapsed && "mx-auto"
             )}
             aria-label={sidebarCollapsed ? "사이드바 확장" : "사이드바 축소"}
           >
             <ChevronLeft className={cn(
-              "h-4 w-4 transition-transform duration-200",
+              "h-5 w-5 transition-transform duration-300",
               sidebarCollapsed && "rotate-180"
             )} />
           </Button>
         </div>
 
-        {/* Real-time Indicators */}
+        {/* Enhanced Real-time Status Panel */}
         {!sidebarCollapsed && (
-          <div className="px-4 py-3 border-b bg-muted/30">
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">시스템 상태</span>
-                <div className="flex items-center gap-1">
-                  {systemStatus === 'online' ? (
-                    <>
-                      <Wifi className="h-3 w-3 text-green-500" />
-                      <span className="text-green-600 font-medium">온라인</span>
-                    </>
-                  ) : (
-                    <>
-                      <WifiOff className="h-3 w-3 text-red-500" />
-                      <span className="text-red-600 font-medium">오프라인</span>
-                    </>
-                  )}
+          <div className="px-4 py-4 border-b border-border/50 bg-gradient-to-b from-muted/30 to-transparent">
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-2 h-2 rounded-full",
+                    systemStatus === 'online' ? "bg-green-500 animate-pulse" : "bg-red-500"
+                  )}></div>
+                  <span className="text-muted-foreground font-medium">시스템</span>
                 </div>
+                <span className={cn(
+                  "font-semibold text-xs",
+                  systemStatus === 'online' ? "text-green-600" : "text-red-600"
+                )}>
+                  {systemStatus === 'online' ? '정상 작동' : '연결 끊김'}
+                </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">활성 사용자</span>
-                <div className="flex items-center gap-1">
-                  <Users className="h-3 w-3 text-blue-500" />
-                  <span className="font-medium">{activeUsers}명</span>
+              
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <Users2 className="h-4 w-4 text-blue-500" />
+                  <span className="text-muted-foreground font-medium">활성 사용자</span>
                 </div>
+                <span className="font-semibold text-blue-600">{activeUsers}명</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">마지막 동기화</span>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3 text-muted-foreground" />
-                  <span className="font-medium">
-                    {lastSync.toLocaleTimeString('ko-KR', { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </span>
+              
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-muted-foreground font-medium">동기화</span>
                 </div>
+                <span className="font-medium text-xs">
+                  {lastSync.toLocaleTimeString('ko-KR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  })}
+                </span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Navigation Sections */}
+        {/* Enhanced Navigation Sections */}
         <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="메인 네비게이션">
           <div className="space-y-4">
             {navigationSections.map((section) => {
@@ -229,36 +251,42 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
                           key={item.href}
                           to={item.href}
                           className={cn(
-                            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 group",
+                            "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 group relative",
                             isActive 
-                              ? 'bg-primary text-primary-foreground shadow-md' 
-                              : 'hover:bg-primary/10 text-sidebar-foreground hover:text-primary',
+                              ? 'bg-gradient-to-r from-primary/10 to-primary/5 text-primary shadow-md shadow-primary/10' 
+                              : 'hover:bg-primary/10 text-sidebar-foreground hover:text-primary hover:translate-x-1',
                             item.disabled && 'opacity-50 cursor-not-allowed pointer-events-none'
                           )}
                           aria-current={isActive ? 'page' : undefined}
                           aria-disabled={item.disabled}
                         >
                           <div className={cn(
-                            "flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200",
+                            "flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 relative",
                             isActive 
-                              ? "bg-white/20 shadow-sm" 
-                              : "bg-primary/10 group-hover:bg-primary/20"
+                              ? "bg-primary/20 shadow-sm" 
+                              : "bg-primary/5 group-hover:bg-primary/10"
                           )}>
                             <Icon className="h-4 w-4 shrink-0" />
+                            {isActive && (
+                              <div className="absolute -inset-1 bg-primary/10 rounded-full animate-ping"></div>
+                            )}
                           </div>
                           {!sidebarCollapsed && (
                             <>
-                              <span className="flex-1">{item.name}</span>
+                              <span className="flex-1 font-medium">{item.name}</span>
                               {item.badge && (
                                 <Badge 
                                   variant={item.disabled ? "secondary" : isActive ? "secondary" : "default"} 
                                   className={cn(
-                                    "ml-auto h-5 px-1.5 text-xs",
-                                    isActive && "bg-white/20 text-white border-white/30"
+                                    "ml-auto h-5 px-2 text-xs font-medium",
+                                    isActive && "bg-primary/20 text-primary border-primary/30"
                                   )}
                                 >
                                   {item.badge}
                                 </Badge>
+                              )}
+                              {isActive && (
+                                <div className="w-1 h-4 bg-primary rounded-full"></div>
                               )}
                             </>
                           )}
@@ -272,9 +300,9 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
           </div>
         </nav>
 
-        {/* Sidebar Footer */}
+        {/* Enhanced Sidebar Footer */}
         {!sidebarCollapsed && (
-          <div className="p-4 border-t">
+          <div className="p-4 border-t border-border/50 bg-gradient-to-t from-muted/30 to-transparent">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <AlertCircle className="h-3 w-3" />
               <span>v1.0.0 · 지원센터</span>
@@ -283,73 +311,73 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
         )}
       </aside>
 
-      {/* Main Content Area */}
-      <div className={cn(
-        "flex flex-col transition-all duration-300",
-        sidebarCollapsed ? "lg:pl-[70px]" : "lg:pl-72"
-      )}>
-        {/* Enhanced Header */}
-        <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b shadow-sm">
-          <div className="flex h-16 items-center gap-4 px-6">
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden rounded-lg hover:bg-primary/10"
-              aria-label="메뉴 열기"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+      {/* Enhanced Main Content Area */}
+        <div className={cn(
+          "flex flex-col transition-all duration-300",
+          sidebarCollapsed ? "lg:pl-[70px]" : "lg:pl-80"
+        )}>
+          {/* Enhanced Header */}
+          <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-sm border-b border-border/50 shadow-sm">
+            <div className="flex h-20 items-center gap-6 px-6 lg:px-8">
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="lg:hidden rounded-xl hover:bg-muted/50 transition-all duration-200"
+                aria-label="메뉴 열기"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
 
-            {/* Breadcrumb Navigation */}
-            <nav className="flex-1" aria-label="브레드크럼">
-              <ol className="flex items-center gap-2 text-sm">
-                {breadcrumbs.map((crumb, index) => (
-                  <React.Fragment key={crumb.href}>
-                    {index > 0 && (
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    )}
-                    {index === breadcrumbs.length - 1 ? (
-                      <li className="font-medium text-foreground">{crumb.name}</li>
-                    ) : (
-                      <li>
-                        <Link 
-                          to={crumb.href} 
-                          className="text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          {crumb.name}
-                        </Link>
-                      </li>
-                    )}
-                  </React.Fragment>
-                ))}
-              </ol>
-            </nav>
+              {/* Enhanced Breadcrumb Navigation */}
+              <nav className="flex-1" aria-label="브레드크럼">
+                <ol className="flex items-center gap-2 text-sm">
+                  {breadcrumbs.map((crumb, index) => (
+                    <React.Fragment key={crumb.href}>
+                      {index > 0 && (
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      {index === breadcrumbs.length - 1 ? (
+                        <li className="font-bold text-foreground text-base">{crumb.name}</li>
+                      ) : (
+                        <li>
+                          <Link 
+                            to={crumb.href} 
+                            className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+                          >
+                            {crumb.name}
+                          </Link>
+                        </li>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </ol>
+              </nav>
 
-            {/* Header Actions */}
-            <div className="flex items-center gap-3">
-              {/* Enhanced Data Scope Selector */}
-              <DataScopeSelector
-                dashboardType="company"
-                variant="compact"
-                size="sm"
-                className="hidden lg:flex"
-              />
-              
-              <Separator orientation="vertical" className="h-8 hidden lg:block" />
-              
-              {/* Global Search */}
-              <GlobalSearch className="hidden sm:flex" />
-              
-              {/* Notifications */}
-              <NotificationCenter />
-              
-              {/* User Profile Menu */}
-              <UserProfileMenu />
+              {/* Enhanced Header Actions */}
+              <div className="flex items-center gap-4">
+                {/* Enhanced Data Scope Selector */}
+                <DataScopeSelector
+                  dashboardType="company"
+                  variant="compact"
+                  size="sm"
+                  className="hidden lg:flex"
+                />
+                
+                <Separator orientation="vertical" className="h-8 hidden lg:block" />
+                
+                {/* Global Search */}
+                <GlobalSearch className="hidden sm:flex" />
+                
+                {/* Notifications */}
+                <NotificationCenter />
+                
+                {/* User Profile Menu */}
+                <UserProfileMenu />
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
         {/* Data Scope Panel - More prominent display */}
         <div className="bg-muted/50 border-b px-6 py-4">
@@ -361,9 +389,9 @@ export function CompanyDashboardLayout({ children }: CompanyDashboardLayoutProps
           />
         </div>
 
-        {/* Main Content with proper spacing */}
-        <main className="flex-1 bg-muted/30">
-          <div className="container mx-auto p-6">
+        {/* Enhanced Main Content with proper spacing */}
+        <main className="flex-1 bg-gradient-to-br from-background via-background to-muted/10">
+          <div className="container mx-auto p-6 lg:p-8">
             {(() => {
               console.log('[CompanyDashboardLayout] Rendering main content', {
                 hasChildren: !!children,

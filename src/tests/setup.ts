@@ -45,6 +45,119 @@ jest.mock('react-hot-toast', () => ({
   }
 }));
 
+// React Router 모킹
+jest.mock('react-router', () => ({
+  Link: ({ to, children, className, ...props }: any) => (
+    <a 
+      href={to} 
+      className={className}
+      data-testid={`link-${to.replace(/\//g, '-')}`}
+      {...props}
+    >
+      {children}
+    </a>
+  ),
+  useLocation: () => ({
+    pathname: '/test',
+    search: '',
+    hash: '',
+    state: null
+  }),
+  useNavigate: () => jest.fn()
+}));
+
+// Clerk 모킹
+jest.mock('@clerk/clerk-react', () => ({
+  SignIn: ({ appearance, routing, redirectUrl, signUpUrl, ...props }: any) => (
+    <div data-testid="clerk-sign-in" data-routing={routing} data-redirect-url={redirectUrl} data-signup-url={signUpUrl}>
+      <form data-testid="sign-in-form">
+        <input 
+          data-testid="email-input" 
+          type="email" 
+          placeholder="이메일"
+          className={appearance?.elements?.formFieldInput}
+        />
+        <input 
+          data-testid="password-input" 
+          type="password" 
+          placeholder="비밀번호"
+          className={appearance?.elements?.formFieldInput}
+        />
+        <button 
+          type="submit" 
+          data-testid="sign-in-button"
+          className={appearance?.elements?.formButtonPrimary}
+        >
+          로그인
+        </button>
+        <div data-testid="social-buttons">
+          <button 
+            data-testid="google-sign-in"
+            className={appearance?.elements?.socialButtonsBlockButton}
+          >
+            Google로 로그인
+          </button>
+        </div>
+        <a data-testid="forgot-password-link" className={appearance?.elements?.footerActionLink}>
+          비밀번호를 잊으셨나요?
+        </a>
+      </form>
+    </div>
+  ),
+  SignUp: ({ appearance, routing, redirectUrl, signInUrl, ...props }: any) => (
+    <div data-testid="clerk-sign-up" data-routing={routing} data-redirect-url={redirectUrl} data-signin-url={signInUrl}>
+      <form data-testid="sign-up-form">
+        <input 
+          data-testid="email-input" 
+          type="email" 
+          placeholder="이메일"
+          className={appearance?.elements?.formFieldInput}
+        />
+        <input 
+          data-testid="password-input" 
+          type="password" 
+          placeholder="비밀번호"
+          className={appearance?.elements?.formFieldInput}
+        />
+        <input 
+          data-testid="first-name-input" 
+          type="text" 
+          placeholder="이름"
+          className={appearance?.elements?.formFieldInput}
+        />
+        <button 
+          type="submit" 
+          data-testid="sign-up-button"
+          className={appearance?.elements?.formButtonPrimary}
+        >
+          회원가입
+        </button>
+        <div data-testid="social-buttons">
+          <button 
+            data-testid="google-sign-up"
+            className={appearance?.elements?.socialButtonsBlockButton}
+          >
+            Google로 회원가입
+          </button>
+        </div>
+        <div data-testid="terms-agreement" className={appearance?.elements?.formFieldAction}>
+          약관에 동의합니다
+        </div>
+      </form>
+    </div>
+  ),
+  useAuth: () => ({
+    isSignedIn: false,
+    user: null,
+    signOut: jest.fn()
+  }),
+  useUser: () => ({
+    user: null,
+    isLoaded: true
+  }),
+  ClerkProvider: ({ children }: any) => <div data-testid="clerk-provider">{children}</div>
+}));
+
 // Lucide React 아이콘 모킹
 jest.mock('lucide-react', () => ({
   AlertTriangle: () => 'AlertTriangle',
@@ -56,7 +169,14 @@ jest.mock('lucide-react', () => ({
   ChevronDown: () => 'ChevronDown',
   LogOut: () => 'LogOut',
   Building: () => 'Building',
-  Store: () => 'Store'
+  Store: () => 'Store',
+  LogIn: () => 'LogIn',
+  UserPlus: () => 'UserPlus',
+  ChefHat: () => 'ChefHat',
+  ArrowLeft: () => 'ArrowLeft',
+  Mail: () => 'Mail',
+  Sparkles: () => 'Sparkles',
+  ArrowRight: () => 'ArrowRight'
 }));
 
 // 환경 변수 모킹

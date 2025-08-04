@@ -646,7 +646,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../ui/card'
 interface ColorInfo {
   name: string
   variable: string
-  hslValue: string
+  cssVariable: string
   description?: string
   group: 'primary' | 'semantic' | 'neutral' | 'chart' | 'sidebar'
 }
@@ -656,42 +656,42 @@ const colorData: ColorInfo[] = <span class="cstat-no" title="statement not cover
   {
     name: 'Primary',
     variable: '--primary',
-    hslValue: 'hsl(243.3962 75.3555% 58.6275%)',
+    cssVariable: 'var(--primary)',
     description: '주요 브랜드 색상',
     group: 'primary'
   },
   {
     name: 'Primary Foreground',
     variable: '--primary-foreground',
-    hslValue: 'hsl(0 0% 100%)',
+    cssVariable: 'var(--primary-foreground)',
     description: 'Primary 색상 위의 텍스트',
     group: 'primary'
   },
   {
     name: 'Secondary',
     variable: '--secondary',
-    hslValue: 'hsl(173.4146 80.3922% 40%)',
+    cssVariable: 'var(--secondary)',
     description: '보조 브랜드 색상',
     group: 'primary'
   },
   {
     name: 'Secondary Foreground',
     variable: '--secondary-foreground',
-    hslValue: 'hsl(0 0% 100%)',
+    cssVariable: 'var(--secondary-foreground)',
     description: 'Secondary 색상 위의 텍스트',
     group: 'primary'
   },
   {
     name: 'Accent',
     variable: '--accent',
-    hslValue: 'hsl(37.6923 92.1260% 50.1961%)',
+    cssVariable: 'var(--accent)',
     description: '강조 색상',
     group: 'primary'
   },
   {
     name: 'Accent Foreground',
     variable: '--accent-foreground',
-    hslValue: 'hsl(0 0% 0%)',
+    cssVariable: 'var(--accent-foreground)',
     description: 'Accent 색상 위의 텍스트',
     group: 'primary'
   },
@@ -700,14 +700,14 @@ const colorData: ColorInfo[] = <span class="cstat-no" title="statement not cover
   {
     name: 'Destructive',
     variable: '--destructive',
-    hslValue: 'hsl(0 84.2365% 60.1961%)',
+    cssVariable: 'var(--destructive)',
     description: '경고 및 삭제 액션',
     group: 'semantic'
   },
   {
     name: 'Destructive Foreground',
     variable: '--destructive-foreground',
-    hslValue: 'hsl(0 0% 100%)',
+    cssVariable: 'var(--destructive-foreground)',
     description: 'Destructive 색상 위의 텍스트',
     group: 'semantic'
   },
@@ -716,63 +716,63 @@ const colorData: ColorInfo[] = <span class="cstat-no" title="statement not cover
   {
     name: 'Background',
     variable: '--background',
-    hslValue: 'hsl(80.0000 33.3333% 96.4706%)',
+    cssVariable: 'var(--background)',
     description: '페이지 배경색',
     group: 'neutral'
   },
   {
     name: 'Foreground',
     variable: '--foreground',
-    hslValue: 'hsl(0 0% 0%)',
+    cssVariable: 'var(--foreground)',
     description: '기본 텍스트 색상',
     group: 'neutral'
   },
   {
     name: 'Card',
     variable: '--card',
-    hslValue: 'hsl(0 0% 100%)',
+    cssVariable: 'var(--card)',
     description: '카드 배경색',
     group: 'neutral'
   },
   {
     name: 'Card Foreground',
     variable: '--card-foreground',
-    hslValue: 'hsl(0 0% 0%)',
+    cssVariable: 'var(--card-foreground)',
     description: '카드 텍스트 색상',
     group: 'neutral'
   },
   {
     name: 'Muted',
     variable: '--muted',
-    hslValue: 'hsl(0 0% 94.1176%)',
+    cssVariable: 'var(--muted)',
     description: '약한 배경색',
     group: 'neutral'
   },
   {
     name: 'Muted Foreground',
     variable: '--muted-foreground',
-    hslValue: 'hsl(0 0% 20%)',
+    cssVariable: 'var(--muted-foreground)',
     description: '약한 텍스트 색상',
     group: 'neutral'
   },
   {
     name: 'Border',
     variable: '--border',
-    hslValue: 'hsl(0 0% 0%)',
+    cssVariable: 'var(--border)',
     description: '테두리 색상',
     group: 'neutral'
   },
   {
     name: 'Input',
     variable: '--input',
-    hslValue: 'hsl(0 0% 45.0980%)',
+    cssVariable: 'var(--input)',
     description: '입력 필드 배경색',
     group: 'neutral'
   },
   {
     name: 'Ring',
     variable: '--ring',
-    hslValue: 'hsl(229.6552 93.5484% 81.7647%)',
+    cssVariable: 'var(--ring)',
     description: '포커스 링 색상',
     group: 'neutral'
   },
@@ -781,35 +781,35 @@ const colorData: ColorInfo[] = <span class="cstat-no" title="statement not cover
   {
     name: 'Chart 1',
     variable: '--chart-1',
-    hslValue: 'hsl(243.3962 75.3555% 58.6275%)',
+    cssVariable: 'var(--chart-1)',
     description: '차트 색상 1',
     group: 'chart'
   },
   {
     name: 'Chart 2',
     variable: '--chart-2',
-    hslValue: 'hsl(173.4146 80.3922% 40%)',
+    cssVariable: 'var(--chart-2)',
     description: '차트 색상 2',
     group: 'chart'
   },
   {
     name: 'Chart 3',
     variable: '--chart-3',
-    hslValue: 'hsl(37.6923 92.1260% 50.1961%)',
+    cssVariable: 'var(--chart-3)',
     description: '차트 색상 3',
     group: 'chart'
   },
   {
     name: 'Chart 4',
     variable: '--chart-4',
-    hslValue: 'hsl(330.3659 81.1881% 60.3922%)',
+    cssVariable: 'var(--chart-4)',
     description: '차트 색상 4',
     group: 'chart'
   },
   {
     name: 'Chart 5',
     variable: '--chart-5',
-    hslValue: 'hsl(142.0859 70.5628% 45.2941%)',
+    cssVariable: 'var(--chart-5)',
     description: '차트 색상 5',
     group: 'chart'
   },
@@ -862,7 +862,7 @@ export function <span class="fstat-no" title="function not covered" >ColorPalett
 <span class="cstat-no" title="statement not covered" >              &lt;Card key={color.variable} c</span>lassName="overflow-hidden hover:shadow-md transition-shadow"&gt;
                 &lt;div 
                   className="h-20 w-full cursor-pointer relative group"
-                  style={{ backgroundColor: color.hslValue }}
+                  style={{ backgroundColor: color.cssVariable }}
                   onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >copyToClipboard(color.variable, color.name)}</span>
                 &gt;
                   &lt;div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center"&gt;
@@ -885,10 +885,10 @@ export function <span class="fstat-no" title="function not covered" >ColorPalett
                         var({color.variable})
                       &lt;/button&gt;
                       &lt;button
-                        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >copyToClipboard(color.hslValue, `${color.name}-hsl`)}</span>
+                        onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >copyToClipboard(color.cssVariable, `${color.name}-css`)}</span>
                         className="block w-full text-left text-xs font-mono text-muted-foreground hover:text-foreground transition-colors p-1 rounded bg-muted/50 hover:bg-muted"
                       &gt;
-                        {color.hslValue}
+                        {color.cssVariable}
                       &lt;/button&gt;
                     &lt;/div&gt;
                   &lt;/div&gt;
@@ -934,7 +934,7 @@ export function <span class="fstat-no" title="function not covered" >ColorPalett
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-31T09:16:33.352Z
+                at 2025-08-04T04:56:51.137Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

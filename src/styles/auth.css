@@ -1,0 +1,559 @@
+/* CulinarySeoul ERP Authentication Styles */
+/* 인증 페이지 전용 스타일링 시스템 */
+
+/* ========================================
+   Authentication Layout Styles
+   ======================================== */
+
+/* Glassmorphism Background Patterns */
+.auth-background-pattern {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.auth-gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.6;
+  animation: float 6s ease-in-out infinite;
+}
+
+.auth-gradient-orb:nth-child(1) {
+  top: -10%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%);
+  animation-delay: 0s;
+}
+
+.auth-gradient-orb:nth-child(2) {
+  bottom: -15%;
+  left: -15%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, hsl(var(--secondary) / 0.12) 0%, transparent 70%);
+  animation-delay: 2s;
+}
+
+.auth-gradient-orb:nth-child(3) {
+  top: 30%;
+  left: 30%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, hsl(var(--accent) / 0.1) 0%, transparent 70%);
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(10px) rotate(240deg);
+  }
+}
+
+/* Geometric Grid Pattern */
+.auth-grid-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background-image: 
+    linear-gradient(hsl(var(--border) / 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* ========================================
+   Authentication Card Styles
+   ======================================== */
+
+/* Enhanced Glassmorphism Cards */
+.auth-card-glass {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.9) 0%,
+    hsl(var(--card) / 0.7) 100%
+  );
+  backdrop-filter: blur(20px);
+  border: 1px solid hsl(var(--border) / 0.5);
+  border-radius: 1.5rem;
+  box-shadow: 
+    0 25px 50px -12px hsl(var(--primary) / 0.08),
+    0 0 0 1px hsl(var(--border) / 0.05);
+}
+
+.auth-card-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--background) / 0.1) 0%,
+    transparent 50%
+  );
+  border-radius: 1.5rem;
+  pointer-events: none;
+}
+
+/* Card Hover Effects */
+.auth-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 32px 64px -12px hsl(var(--primary) / 0.12),
+    0 0 0 1px hsl(var(--border) / 0.1);
+}
+
+/* ========================================
+   Form Enhancement Styles
+   ======================================== */
+
+/* Enhanced Input Fields */
+.auth-input-field {
+  position: relative;
+  background: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border) / 0.5);
+  border-radius: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-input-field:focus {
+  background: hsl(var(--background) / 0.8);
+  border-color: hsl(var(--primary));
+  box-shadow: 
+    0 0 0 3px hsl(var(--primary) / 0.15),
+    0 2px 8px hsl(var(--primary) / 0.1);
+}
+
+.auth-input-field:focus::placeholder {
+  color: hsl(var(--muted-foreground) / 0.6);
+}
+
+/* Enhanced Buttons */
+.auth-button-primary {
+  position: relative;
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  border: none;
+  border-radius: 0.875rem;
+  color: hsl(var(--primary-foreground));
+  font-weight: 600;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px hsl(var(--primary) / 0.3),
+    0 0 0 1px hsl(var(--primary) / 0.1);
+}
+
+.auth-button-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--background) / 0.2) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.auth-button-primary:hover::before {
+  transform: translateX(100%);
+}
+
+.auth-button-primary:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 
+    0 8px 20px hsl(var(--primary) / 0.4),
+    0 0 0 1px hsl(var(--primary) / 0.2);
+}
+
+.auth-button-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Social Login Buttons */
+.auth-social-button {
+  background: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border) / 0.5);
+  border-radius: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-social-button:hover {
+  background: hsl(var(--muted) / 0.8);
+  border-color: hsl(var(--primary) / 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--muted) / 0.3);
+}
+
+/* ========================================
+   Loading & Animation Styles
+   ======================================== */
+
+/* Enhanced Loading Spinners */
+.auth-spinner-gradient {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    hsl(var(--primary)) 0deg,
+    hsl(var(--secondary)) 120deg,
+    hsl(var(--accent)) 240deg,
+    hsl(var(--primary)) 360deg
+  );
+  mask: radial-gradient(circle 8px, transparent 8px, black 8px);
+  animation: auth-spin 1s linear infinite;
+}
+
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulsing Dots Loader */
+.auth-dots-loader {
+  display: flex;
+  gap: 4px;
+}
+
+.auth-dots-loader > div {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  animation: auth-dot-pulse 1.4s ease-in-out infinite both;
+}
+
+.auth-dots-loader > div:nth-child(1) { animation-delay: -0.32s; }
+.auth-dots-loader > div:nth-child(2) { animation-delay: -0.16s; }
+.auth-dots-loader > div:nth-child(3) { animation-delay: 0s; }
+
+@keyframes auth-dot-pulse {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   Step Indicator Styles
+   ======================================== */
+
+/* Enhanced Progress Bars */
+.auth-progress-bar {
+  position: relative;
+  background: hsl(var(--muted));
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.auth-progress-fill {
+  background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  border-radius: 9999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.auth-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--background) / 0.3) 50%,
+    transparent 100%
+  );
+  animation: progress-shimmer 2s infinite;
+}
+
+@keyframes progress-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Step Dots */
+.auth-step-dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-step-dot.completed {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  color: hsl(var(--primary-foreground));
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+}
+
+.auth-step-dot.active {
+  background: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary));
+  border: 2px solid hsl(var(--primary));
+  transform: scale(1.1);
+}
+
+.auth-step-dot.inactive {
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+
+/* ========================================
+   Brand Logo Styles
+   ======================================== */
+
+/* Enhanced Brand Logos */
+.auth-brand-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.auth-brand-logo.gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  padding: 2px;
+}
+
+.auth-brand-logo.gradient > div {
+  background: hsl(var(--background));
+  border-radius: calc(1rem - 2px);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logo Animation */
+.auth-brand-logo-animate {
+  animation: logo-float 3s ease-in-out infinite;
+}
+
+@keyframes logo-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+/* Glass Effect Utilities */
+.glass-light {
+  background: hsl(var(--background) / 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border) / 0.3);
+}
+
+.glass-medium {
+  background: hsl(var(--background) / 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.glass-heavy {
+  background: hsl(var(--background) / 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid hsl(var(--border) / 0.7);
+}
+
+/* Gradient Text Utilities */
+.gradient-text-primary {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-accent {
+  background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animation Utilities */
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+/* Mobile Optimizations */
+@media (max-width: 640px) {
+  .auth-card-glass {
+    margin: 1rem;
+    border-radius: 1.25rem;
+  }
+  
+  .auth-gradient-orb {
+    width: 200px !important;
+    height: 200px !important;
+  }
+  
+  .auth-grid-pattern {
+    background-size: 30px 30px;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .auth-card-glass {
+    border-width: 2px;
+    backdrop-filter: none;
+    background: hsl(var(--card));
+  }
+  
+  .auth-input-field {
+    border-width: 2px;
+    backdrop-filter: none;
+    background: hsl(var(--background));
+  }
+  
+  .auth-button-primary {
+    box-shadow: none;
+    border: 2px solid hsl(var(--primary));
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .auth-gradient-orb,
+  .auth-grid-pattern,
+  .auth-brand-logo-animate,
+  .auth-progress-fill::after {
+    animation: none;
+  }
+  
+  .auth-button-primary,
+  .auth-social-button,
+  .auth-input-field,
+  .auth-step-dot {
+    transition: none;
+  }
+}
+
+/* ========================================
+   Dark Mode Enhancements
+   ======================================== */
+
+.dark .auth-card-glass {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.8) 0%,
+    hsl(var(--card) / 0.6) 100%
+  );
+  box-shadow: 
+    0 25px 50px -12px hsl(var(--background) / 0.5),
+    0 0 0 1px hsl(var(--border) / 0.1);
+}
+
+.dark .auth-input-field {
+  background: hsl(var(--background) / 0.8);
+}
+
+.dark .auth-social-button {
+  background: hsl(var(--background) / 0.8);
+}
+
+.dark .auth-gradient-orb:nth-child(1) {
+  background: radial-gradient(circle, hsl(var(--primary) / 0.08) 0%, transparent 70%);
+}
+
+.dark .auth-gradient-orb:nth-child(2) {
+  background: radial-gradient(circle, hsl(var(--secondary) / 0.06) 0%, transparent 70%);
+}
+
+.dark .auth-gradient-orb:nth-child(3) {
+  background: radial-gradient(circle, hsl(var(--accent) / 0.04) 0%, transparent 70%);
+}

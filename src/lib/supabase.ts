@@ -46,6 +46,92 @@ class PermissionCache {
 
 export const permissionCache = new PermissionCache();
 
+// Clerk 사용자 컨텍스트 설정
+export const setClerkUserContext = async (clerkUserId: string) => {
+  try {
+    const { error } = await supabase.rpc('set_clerk_user_context', {
+      p_clerk_user_id: clerkUserId
+    });
+    
+    if (error) {
+      console.error('Clerk 사용자 컨텍스트 설정 실패:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('Clerk 사용자 컨텍스트 설정 오류:', error);
+    throw error;
+  }
+};
+
+// Clerk 사용자 프로필 동기화
+export const syncClerkUserProfileToSupabase = async (
+  clerkUserId: string,
+  email: string,
+  fullName?: string,
+  avatarUrl?: string,
+  userType: string = 'BRAND_MANAGER',
+  onboardingCompleted: boolean = false
+) => {
+  try {
+    const { data, error } = await supabase.rpc('sync_clerk_user_profile', {
+      p_clerk_user_id: clerkUserId,
+      p_email: email,
+      p_full_name: fullName,
+      p_avatar_url: avatarUrl,
+      p_user_type: userType,
+      p_onboarding_completed: onboardingCompleted
+    });
+    
+    if (error) {
+      console.error('Clerk 사용자 프로필 동기화 실패:', error);
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Clerk 사용자 프로필 동기화 오류:', error);
+    throw error;
+  }
+};
+
+// Clerk 사용자 권한 조회
+export const getClerkUserPermissions = async (clerkUserId: string) => {
+  try {
+    const { data, error } = await supabase.rpc('get_clerk_user_permissions', {
+      p_clerk_user_id: clerkUserId
+    });
+    
+    if (error) {
+      console.error('Clerk 사용자 권한 조회 실패:', error);
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Clerk 사용자 권한 조회 오류:', error);
+    throw error;
+  }
+};
+
+// Clerk 사용자 최고 권한 조회
+export const getClerkUserHighestPermission = async (clerkUserId: string) => {
+  try {
+    const { data, error } = await supabase.rpc('get_clerk_user_highest_permission', {
+      p_clerk_user_id: clerkUserId
+    });
+    
+    if (error) {
+      console.error('Clerk 사용자 최고 권한 조회 실패:', error);
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Clerk 사용자 최고 권한 조회 오류:', error);
+    throw error;
+  }
+};
+
 // Supabase 실시간 구독 관리
 export class RealtimeManager {
   private subscriptions = new Map<string, any>();
